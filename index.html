@@ -3,7 +3,6 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <title>Create DO</title>
@@ -103,7 +102,7 @@
       }
 
       textarea.form-control {
-        resize: vertical;
+        resize: none;
       }
 
       .form-text {
@@ -194,14 +193,6 @@
         color: #6c757d;
       }
 
-      .result-success {
-        color: #198754;
-      }
-
-      .result-error {
-        color: #dc3545;
-      }
-
       .progress {
         height: 5px;
       }
@@ -266,9 +257,7 @@
         =================================================== -->
 
           <div class="col-lg-6 column">
-            <!-- ==================================================
-                 API CONFIGURATION
-            =================================================== -->
+            <!-- API CONFIGURATION -->
 
             <div class="card section-card">
               <div class="card-body">
@@ -310,9 +299,7 @@
               </div>
             </div>
 
-            <!-- ==================================================
-                 DELIVERY
-            =================================================== -->
+            <!-- DELIVERY -->
 
             <div class="card section-card">
               <div class="card-body">
@@ -364,9 +351,7 @@
               </div>
             </div>
 
-            <!-- ==================================================
-                 DELIVERY REFERENCE
-            =================================================== -->
+            <!-- DELIVERY REFERENCE -->
 
             <div class="card section-card">
               <div class="card-body">
@@ -377,11 +362,11 @@
                     <label class="form-label required"> Plant </label>
 
                     <select class="form-select" id="plant">
-                      <option value="SGI040P1" selected>SGI040P1</option>
+                      <option value="SGI040P1">SGI040P1</option>
 
                       <option value="SIG007ST">SIG007ST</option>
 
-                      <option value="SGI060ST">SGI060ST</option>
+                      <option value="SGI060ST" selected>SGI060ST</option>
                     </select>
                   </div>
 
@@ -420,19 +405,18 @@
                       id="release_number"
                       min="0"
                       step="1"
+                      value="1"
                     />
 
                     <div class="form-text">
-                      Editable. +1 after successful request
+                      Manual input. Will NOT auto increment.
                     </div>
                   </div>
                 </div>
               </div>
             </div>
 
-            <!-- ==================================================
-                 DESTINATION
-            =================================================== -->
+            <!-- DESTINATION -->
 
             <div class="card section-card">
               <div class="card-body">
@@ -481,9 +465,7 @@
 
           <div class="col-lg-6 column">
             <div class="right-panel">
-              <!-- ==================================================
-                     DELIVERY LOAD
-                =================================================== -->
+              <!-- DELIVERY LOAD -->
 
               <div class="card section-card">
                 <div class="card-body">
@@ -550,9 +532,7 @@
                 </div>
               </div>
 
-              <!-- ==================================================
-                     ACTION
-                =================================================== -->
+              <!-- ACTION -->
 
               <div class="card action-card">
                 <div class="card-body">
@@ -594,9 +574,7 @@
                 </div>
               </div>
 
-              <!-- ==================================================
-                     OUTPUT
-                =================================================== -->
+              <!-- OUTPUT -->
 
               <div class="card output-card">
                 <div class="card-body">
@@ -648,16 +626,10 @@
     <script>
       $(document).ready(function () {
         /* ==========================================================
-       CONSTANT
+       PLANT CONFIGURATION
     ========================================================== */
 
-        var RELEASE_NUMBER_STORAGE_KEY = "delivery_api_release_number";
-
-        /* ==========================================================
-       PLANT CONFIG
-    ========================================================== */
-
-        var plantConfig = {
+        const plantConfig = {
           SGI040P1: {
             type: "CYLINDER",
 
@@ -697,23 +669,23 @@
         }
 
         /* ==========================================================
-       DEFAULT PICKUP
+       DEFAULT EXPECTED PICKUP
        
        Tomorrow at 08:00
     ========================================================== */
 
         function setDefaultExpectedPickup() {
-          var tomorrow = new Date();
+          const tomorrow = new Date();
 
           tomorrow.setDate(tomorrow.getDate() + 1);
 
           tomorrow.setHours(8, 0, 0, 0);
 
-          var year = tomorrow.getFullYear();
+          const year = tomorrow.getFullYear();
 
-          var month = String(tomorrow.getMonth() + 1).padStart(2, "0");
+          const month = String(tomorrow.getMonth() + 1).padStart(2, "0");
 
-          var day = String(tomorrow.getDate()).padStart(2, "0");
+          const day = String(tomorrow.getDate()).padStart(2, "0");
 
           $("#expected_pickup_on").val(
             year + "-" + month + "-" + day + "T08:00",
@@ -721,85 +693,11 @@
         }
 
         /* ==========================================================
-       GET RELEASE NUMBER
-    ========================================================== */
-
-        function getReleaseNumber() {
-          var value = $("#release_number").val();
-
-          if (value === "" || value === null) {
-            return null;
-          }
-
-          return Number(value);
-        }
-
-        /* ==========================================================
-       SAVE RELEASE NUMBER
-    ========================================================== */
-
-        function saveReleaseNumber() {
-          var value = $("#release_number").val();
-
-          if (value !== "") {
-            localStorage.setItem(RELEASE_NUMBER_STORAGE_KEY, value);
-          }
-        }
-
-        /* ==========================================================
-       INITIALIZE RELEASE NUMBER
-    ========================================================== */
-
-        function initializeReleaseNumber() {
-          var saved = localStorage.getItem(RELEASE_NUMBER_STORAGE_KEY);
-
-          if (saved !== null && /^\d+$/.test(saved)) {
-            $("#release_number").val(saved);
-
-            return;
-          }
-
-          var number = $("#reference_number").val();
-
-          var digits = number.match(/\d/g);
-
-          var initialValue = 1;
-
-          if (digits && digits.length > 0) {
-            initialValue = Number(digits[digits.length - 1]);
-          }
-
-          $("#release_number").val(initialValue);
-
-          saveReleaseNumber();
-        }
-
-        /* ==========================================================
-       INCREMENT RELEASE NUMBER
-    ========================================================== */
-
-        function incrementReleaseNumber() {
-          var current = getReleaseNumber();
-
-          if (current === null || isNaN(current)) {
-            current = 0;
-          }
-
-          current++;
-
-          $("#release_number").val(current);
-
-          saveReleaseNumber();
-
-          updatePreview();
-        }
-
-        /* ==========================================================
        GET ADDRESSES
     ========================================================== */
 
         function getAddresses() {
-          var raw = $("#customer_address_id").val();
+          const raw = $("#customer_address_id").val();
 
           return raw
             .split(/\r?\n/)
@@ -816,7 +714,7 @@
     ========================================================== */
 
         function updateAddressCounter() {
-          var addresses = getAddresses();
+          const addresses = getAddresses();
 
           $("#addressCounter").text(
             addresses.length +
@@ -829,19 +727,25 @@
     ========================================================== */
 
         function updatePlantFields() {
-          var plant = $("#plant").val();
+          const plant = $("#plant").val();
 
-          var config = plantConfig[plant];
+          const config = plantConfig[plant];
 
           if (!config) {
             return;
           }
 
+          /* TYPE */
+
           $("#load_type").val(config.type);
+
+          /* UOM */
 
           $("#uom").val(config.uom);
 
-          var skuSelect = $("#sku_name");
+          /* SKU */
+
+          const skuSelect = $("#sku_name");
 
           skuSelect.empty();
 
@@ -859,11 +763,11 @@
         }
 
         /* ==========================================================
-       PICKUP DATE → ISO
+       EXPECTED PICKUP → ISO FORMAT
     ========================================================== */
 
         function getExpectedPickupOn() {
-          var value = $("#expected_pickup_on").val();
+          const value = $("#expected_pickup_on").val();
 
           if (!value) {
             return "";
@@ -873,10 +777,31 @@
         }
 
         /* ==========================================================
-       BUILD PAYLOAD
+       GET RELEASE NUMBER
+       
+       IMPORTANT:
+       NO AUTO INCREMENT
     ========================================================== */
 
-        function buildPayload(address, releaseNumber) {
+        function getReleaseNumber() {
+          const value = $("#release_number").val();
+
+          if (value === "" || value === null) {
+            return null;
+          }
+
+          return Number(value);
+        }
+
+        /* ==========================================================
+       BUILD PAYLOAD
+       
+       Same release number for every address.
+    ========================================================== */
+
+        function buildPayload(address) {
+          const releaseNumber = getReleaseNumber();
+
           return {
             delivery_type: getValue("delivery_type"),
 
@@ -918,23 +843,15 @@
 
         /* ==========================================================
        PREVIEW JSON
-       
-       Preview shows all addresses as separate requests.
     ========================================================== */
 
         function updatePreview() {
-          var addresses = getAddresses();
+          const addresses = getAddresses();
 
-          var releaseNumber = getReleaseNumber();
-
-          if (releaseNumber === null) {
-            releaseNumber = 1;
-          }
-
-          var previews = [];
+          const previews = [];
 
           $.each(addresses, function (index, address) {
-            previews.push(buildPayload(address, releaseNumber + index));
+            previews.push(buildPayload(address));
           });
 
           $("#requestBody").val(JSON.stringify(previews, null, 4));
@@ -949,16 +866,25 @@
             .removeClass(
               "bg-secondary " + "bg-success " + "bg-danger " + "bg-warning",
             )
+
             .addClass("bg-" + type)
+
             .text(text);
         }
 
         /* ==========================================================
        NUMBER VALIDATION
+       
+       Only:
+       A-Z
+       a-z
+       0-9
+       .
+       _
     ========================================================== */
 
         $("#reference_number").on("input", function () {
-          var value = $(this).val();
+          let value = $(this).val();
 
           value = value.replace(/[^a-zA-Z0-9._]/g, "");
 
@@ -969,34 +895,20 @@
 
         /* ==========================================================
        RELEASE NUMBER VALIDATION
+       
+       Numeric only.
+       
+       NO AUTO INCREMENT.
     ========================================================== */
 
         $("#release_number").on("input", function () {
-          var value = $(this).val();
+          let value = $(this).val();
 
           value = value.replace(/\D/g, "");
 
           $(this).val(value);
 
-          saveReleaseNumber();
-
           updatePreview();
-        });
-
-        /* ==========================================================
-       RELEASE NUMBER BLUR
-    ========================================================== */
-
-        $("#release_number").on("blur", function () {
-          var value = $(this).val();
-
-          if (value === "") {
-            $(this).val(1);
-
-            saveReleaseNumber();
-
-            updatePreview();
-          }
         });
 
         /* ==========================================================
@@ -1018,7 +930,7 @@
         });
 
         /* ==========================================================
-       AUTO UPDATE PREVIEW
+       GENERAL INPUT CHANGE
     ========================================================== */
 
         $(
@@ -1052,13 +964,13 @@
        SEND ONE REQUEST
     ========================================================== */
 
-        function sendOneRequest(address, releaseNumber) {
+        function sendOneRequest(address) {
           return new Promise(function (resolve) {
-            var endpoint = getValue("endpoint");
+            const endpoint = getValue("endpoint");
 
-            var token = getValue("token");
+            const token = getValue("token");
 
-            var payload = buildPayload(address, releaseNumber);
+            const payload = buildPayload(address);
 
             $.ajax({
               url: endpoint,
@@ -1078,7 +990,7 @@
               dataType: "text",
 
               success: function (response, textStatus, xhr) {
-                var parsedResponse;
+                let parsedResponse;
 
                 try {
                   parsedResponse = JSON.parse(response);
@@ -1091,7 +1003,7 @@
 
                   address: address,
 
-                  releaseNumber: releaseNumber,
+                  releaseNumber: getReleaseNumber(),
 
                   status: xhr.status,
 
@@ -1100,9 +1012,9 @@
               },
 
               error: function (xhr, textStatus, errorThrown) {
-                var response = xhr.responseText;
+                let response = xhr.responseText;
 
-                var parsedResponse;
+                let parsedResponse;
 
                 try {
                   parsedResponse = JSON.parse(response);
@@ -1115,7 +1027,7 @@
 
                   address: address,
 
-                  releaseNumber: releaseNumber,
+                  releaseNumber: getReleaseNumber(),
 
                   status: xhr.status,
 
@@ -1127,22 +1039,22 @@
         }
 
         /* ==========================================================
-       SEND ALL
+       SEND ALL REQUESTS
        
        IMPORTANT:
-       Requests are sent sequentially.
+       Release Number is NOT changed.
     ========================================================== */
 
         $("#sendBtn").on("click", async function () {
-          var endpoint = getValue("endpoint");
+          const endpoint = getValue("endpoint");
 
-          var token = getValue("token");
+          const token = getValue("token");
 
-          var number = getValue("reference_number");
+          const number = getValue("reference_number");
 
-          var releaseNumber = getReleaseNumber();
+          const releaseNumber = getReleaseNumber();
 
-          var addresses = getAddresses();
+          const addresses = getAddresses();
 
           /* --------------------------------------------------
                VALIDATION
@@ -1174,7 +1086,8 @@
 
           if (!/^[a-zA-Z0-9._]+$/.test(number)) {
             alert(
-              "Number hanya boleh berisi huruf, angka, titik (.) dan underscore (_).",
+              "Number hanya boleh berisi " +
+                "huruf, angka, titik (.) dan underscore (_).",
             );
 
             $("#reference_number").focus();
@@ -1214,13 +1127,18 @@
                CONFIRM
             -------------------------------------------------- */
 
-          var confirmed = confirm(
+          const confirmed = confirm(
             "Akan mengirim " +
               addresses.length +
               " request.\n\n" +
-              "Release Number mulai dari " +
+              "Number: " +
+              number +
+              "\n" +
+              "Release Number: " +
               releaseNumber +
-              ".\n\n" +
+              "\n\n" +
+              "Semua request menggunakan " +
+              "Release Number yang sama.\n\n" +
               "Lanjutkan?",
           );
 
@@ -1229,7 +1147,7 @@
           }
 
           /* --------------------------------------------------
-               UI LOADING
+               DISABLE UI
             -------------------------------------------------- */
 
           $("#sendBtn").prop("disabled", true);
@@ -1237,8 +1155,6 @@
           $("#previewBtn").prop("disabled", true);
 
           $("#resetBtn").prop("disabled", true);
-
-          $("#sendText").text("Sending 0/" + addresses.length);
 
           $("#sendLoading").removeClass("d-none");
 
@@ -1251,10 +1167,10 @@
           $("#responseBody").text("");
 
           /* --------------------------------------------------
-               SHOW RESULTS TAB
+               SHOW RESULT TAB
             -------------------------------------------------- */
 
-          var responseTab = document.querySelector(
+          const responseTab = document.querySelector(
             '[data-bs-target="#responseTab"]',
           );
 
@@ -1266,71 +1182,37 @@
                RESULTS
             -------------------------------------------------- */
 
-          var results = [];
-
-          /*
-           * Current release number.
-           *
-           * This changes ONLY after success.
-           */
-
-          var currentRelease = releaseNumber;
+          const results = [];
 
           /* --------------------------------------------------
                SEND SEQUENTIALLY
+               
+               Same release number.
             -------------------------------------------------- */
 
-          for (var i = 0; i < addresses.length; i++) {
-            var address = addresses[i];
+          for (let i = 0; i < addresses.length; i++) {
+            const address = addresses[i];
 
             $("#sendText").text("Sending " + (i + 1) + "/" + addresses.length);
 
-            var result = await sendOneRequest(address, currentRelease);
+            const result = await sendOneRequest(address);
 
             results.push(result);
-
-            /* ----------------------------------------------
-                   SUCCESS
-                ---------------------------------------------- */
-
-            if (result.success) {
-              /*
-               * Only increment after
-               * successful request.
-               */
-
-              currentRelease++;
-
-              /*
-               * Save latest release number.
-               */
-
-              $("#release_number").val(currentRelease);
-
-              saveReleaseNumber();
-            }
 
             /* ----------------------------------------------
                    PROGRESS
                 ---------------------------------------------- */
 
-            var progress = Math.round(((i + 1) / addresses.length) * 100);
+            const progress = Math.round(((i + 1) / addresses.length) * 100);
 
             $("#sendProgress").css("width", progress + "%");
-
-            /*
-             * Update preview so the next
-             * release number is visible.
-             */
-
-            updatePreview();
           }
 
           /* --------------------------------------------------
-               BUILD FINAL RESULT
+               BUILD RESULT
             -------------------------------------------------- */
 
-          var output = "";
+          let output = "";
 
           $.each(results, function (index, result) {
             output += "==================================================\n";
@@ -1340,6 +1222,8 @@
             output += "==================================================\n";
 
             output += "Address       : " + result.address + "\n";
+
+            output += "Number        : " + number + "\n";
 
             output += "Release Number: " + result.releaseNumber + "\n";
 
@@ -1358,14 +1242,14 @@
           $("#responseBody").text(output);
 
           /* --------------------------------------------------
-               FINAL STATUS
+               COUNT RESULT
             -------------------------------------------------- */
 
-          var successCount = results.filter(function (item) {
+          const successCount = results.filter(function (item) {
             return item.success;
           }).length;
 
-          var failedCount = results.length - successCount;
+          const failedCount = results.length - successCount;
 
           if (failedCount === 0) {
             setStatus(
@@ -1391,9 +1275,9 @@
 
           $("#resetBtn").prop("disabled", false);
 
-          $("#sendText").text("Send Request");
-
           $("#sendLoading").addClass("d-none");
+
+          $("#sendText").text("Send Request");
         });
 
         /* ==========================================================
@@ -1401,7 +1285,7 @@
     ========================================================== */
 
         $("#toggleToken").on("click", function () {
-          var input = $("#token");
+          const input = $("#token");
 
           if (input.attr("type") === "password") {
             input.attr("type", "text");
@@ -1429,6 +1313,13 @@
 
           $("#line_number").val("1");
 
+          /*
+           * Release Number remains manual.
+           * Reset value = 1.
+           */
+
+          $("#release_number").val("1");
+
           $("#customer_id").val("FD001");
 
           $("#customer_address_id").val("ZXC-Address-4");
@@ -1440,14 +1331,6 @@
           $("#note").val("");
 
           setDefaultExpectedPickup();
-
-          /*
-           * Reset release number to 1.
-           */
-
-          $("#release_number").val(1);
-
-          saveReleaseNumber();
 
           updatePlantFields();
 
@@ -1467,8 +1350,6 @@
     ========================================================== */
 
         setDefaultExpectedPickup();
-
-        initializeReleaseNumber();
 
         updatePlantFields();
 
