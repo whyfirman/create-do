@@ -1,0 +1,1481 @@
+<!doctype html>
+
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Create DO</title>
+
+    <!-- Bootstrap -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+      }
+
+      body {
+        background: #f5f6f8;
+        overflow: hidden;
+      }
+
+      .app-wrapper {
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .app-header {
+        flex: 0 0 auto;
+        padding: 12px 20px 8px;
+      }
+
+      .app-header h4 {
+        margin: 0;
+        font-weight: 600;
+      }
+
+      .app-header p {
+        margin: 2px 0 0;
+        font-size: 13px;
+      }
+
+      .main-content {
+        flex: 1;
+        min-height: 0;
+        padding: 0 16px 12px;
+      }
+
+      .main-row {
+        height: 100%;
+      }
+
+      .column {
+        height: 100%;
+        min-height: 0;
+      }
+
+      .card {
+        border: 0;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+      }
+
+      .card-body {
+        padding: 14px;
+      }
+
+      .section-card {
+        margin-bottom: 10px;
+      }
+
+      .section-title {
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 10px;
+      }
+
+      .form-label {
+        font-size: 12px;
+        font-weight: 500;
+        margin-bottom: 4px;
+      }
+
+      .form-control,
+      .form-select {
+        font-size: 13px;
+        min-height: 34px;
+        padding: 5px 9px;
+      }
+
+      textarea.form-control {
+        resize: vertical;
+      }
+
+      .form-text {
+        font-size: 10px;
+        margin-top: 2px;
+      }
+
+      .required::after {
+        content: " *";
+        color: red;
+      }
+
+      .auto-field {
+        background-color: #f8f9fa;
+      }
+
+      .right-panel {
+        height: 100%;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .action-card {
+        flex: 0 0 auto;
+      }
+
+      .btn {
+        font-size: 13px;
+      }
+
+      .output-card {
+        flex: 1;
+        min-height: 0;
+        margin-top: 10px;
+      }
+
+      .output-card .card-body {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+      }
+
+      .nav-tabs .nav-link {
+        font-size: 12px;
+        padding: 6px 12px;
+      }
+
+      .tab-content {
+        flex: 1;
+        min-height: 0;
+        margin-top: 8px;
+      }
+
+      .tab-pane {
+        height: 100%;
+      }
+
+      #requestBody,
+      #responseBody {
+        width: 100%;
+        height: 100%;
+        resize: none;
+
+        font-family: Consolas, Monaco, monospace;
+
+        font-size: 11px;
+        line-height: 1.4;
+
+        background: #212529;
+        color: #f8f9fa;
+
+        border: 0;
+        border-radius: 5px;
+
+        padding: 10px;
+      }
+
+      #responseBody {
+        overflow: auto;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+
+      .address-counter {
+        font-size: 11px;
+        color: #6c757d;
+      }
+
+      .result-success {
+        color: #198754;
+      }
+
+      .result-error {
+        color: #dc3545;
+      }
+
+      .progress {
+        height: 5px;
+      }
+
+      @media (max-width: 991px) {
+        body {
+          overflow: auto;
+        }
+
+        .app-wrapper {
+          height: auto;
+          min-height: 100vh;
+        }
+
+        .main-row {
+          height: auto;
+        }
+
+        .column {
+          height: auto;
+        }
+
+        .right-panel {
+          height: auto;
+        }
+
+        .output-card {
+          min-height: 400px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="app-wrapper">
+      <!-- ======================================================
+     HEADER
+======================================================= -->
+
+      <div class="app-header">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <h4>Delivery API Tester</h4>
+
+            <p class="text-muted">Create and send delivery requests</p>
+          </div>
+
+          <div>
+            <span id="statusBadge" class="badge bg-secondary"> Not sent </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ======================================================
+     MAIN
+======================================================= -->
+
+      <div class="main-content">
+        <div class="row g-3 main-row">
+          <!-- ==================================================
+             LEFT COLUMN
+        =================================================== -->
+
+          <div class="col-lg-6 column">
+            <!-- ==================================================
+                 API CONFIGURATION
+            =================================================== -->
+
+            <div class="card section-card">
+              <div class="card-body">
+                <div class="section-title">API Configuration</div>
+
+                <div class="row g-2">
+                  <div class="col-8">
+                    <label class="form-label required"> Endpoint </label>
+
+                    <input
+                      type="url"
+                      class="form-control"
+                      id="endpoint"
+                      value="https://xxx"
+                    />
+                  </div>
+
+                  <div class="col-4">
+                    <label class="form-label required"> Bearer Token </label>
+
+                    <div class="input-group">
+                      <input
+                        type="password"
+                        class="form-control"
+                        id="token"
+                        placeholder="Token"
+                      />
+
+                      <button
+                        type="button"
+                        class="btn btn-outline-secondary"
+                        id="toggleToken"
+                      >
+                        👁
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ==================================================
+                 DELIVERY
+            =================================================== -->
+
+            <div class="card section-card">
+              <div class="card-body">
+                <div class="section-title">Delivery</div>
+
+                <div class="row g-2">
+                  <div class="col-6">
+                    <label class="form-label required"> Delivery Type </label>
+
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="delivery_type"
+                      value="SALES ORDER"
+                    />
+                  </div>
+
+                  <div class="col-6">
+                    <label class="form-label"> Origin Source </label>
+
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="origin_source"
+                      value="-"
+                    />
+                  </div>
+
+                  <div class="col-6">
+                    <label class="form-label required">
+                      Expected Pickup On
+                    </label>
+
+                    <input
+                      type="datetime-local"
+                      class="form-control"
+                      id="expected_pickup_on"
+                    />
+
+                    <div class="form-text">Default: tomorrow 08:00</div>
+                  </div>
+
+                  <div class="col-6">
+                    <label class="form-label"> Note </label>
+
+                    <input type="text" class="form-control" id="note" />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ==================================================
+                 DELIVERY REFERENCE
+            =================================================== -->
+
+            <div class="card section-card">
+              <div class="card-body">
+                <div class="section-title">Delivery Reference</div>
+
+                <div class="row g-2">
+                  <div class="col-6">
+                    <label class="form-label required"> Plant </label>
+
+                    <select class="form-select" id="plant">
+                      <option value="SGI040P1" selected>SGI040P1</option>
+
+                      <option value="SIG007ST">SIG007ST</option>
+
+                      <option value="SGI060ST">SGI060ST</option>
+                    </select>
+                  </div>
+
+                  <div class="col-6">
+                    <label class="form-label required"> Number </label>
+
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="reference_number"
+                      value="1001"
+                    />
+
+                    <div class="form-text">
+                      Only letters, numbers, dot and underscore
+                    </div>
+                  </div>
+
+                  <div class="col-6">
+                    <label class="form-label required"> Line Number </label>
+
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="line_number"
+                      value="1"
+                    />
+                  </div>
+
+                  <div class="col-6">
+                    <label class="form-label required"> Release Number </label>
+
+                    <input
+                      type="number"
+                      class="form-control"
+                      id="release_number"
+                      min="0"
+                      step="1"
+                    />
+
+                    <div class="form-text">
+                      Editable. +1 after successful request
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ==================================================
+                 DESTINATION
+            =================================================== -->
+
+            <div class="card section-card">
+              <div class="card-body">
+                <div class="section-title">Destination</div>
+
+                <div class="row g-2">
+                  <div class="col-6">
+                    <label class="form-label required"> Customer ID </label>
+
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="customer_id"
+                      value="FD001"
+                    />
+                  </div>
+
+                  <div class="col-6">
+                    <div class="d-flex justify-content-between">
+                      <label class="form-label required">
+                        Customer Address ID
+                      </label>
+
+                      <span id="addressCounter" class="address-counter">
+                        0 address
+                      </span>
+                    </div>
+
+                    <textarea
+                      class="form-control"
+                      id="customer_address_id"
+                      rows="3"
+                      placeholder="ZXC-Address-1&#10;ZXC-Address-2&#10;ZXC-Address-3&#10;ZXC-Address-4"
+                    ></textarea>
+
+                    <div class="form-text">One address per line</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ==================================================
+             RIGHT COLUMN
+        =================================================== -->
+
+          <div class="col-lg-6 column">
+            <div class="right-panel">
+              <!-- ==================================================
+                     DELIVERY LOAD
+                =================================================== -->
+
+              <div class="card section-card">
+                <div class="card-body">
+                  <div class="section-title">Delivery Load</div>
+
+                  <div class="row g-2">
+                    <div class="col-6">
+                      <label class="form-label required"> SKU Name </label>
+
+                      <select class="form-select" id="sku_name"></select>
+
+                      <div class="form-text">
+                        Automatically filtered by Plant
+                      </div>
+                    </div>
+
+                    <div class="col-3">
+                      <label class="form-label required"> Quantity </label>
+
+                      <input
+                        type="number"
+                        class="form-control"
+                        id="quantity"
+                        value="10000"
+                        min="0"
+                      />
+                    </div>
+
+                    <div class="col-3">
+                      <label class="form-label required"> UOM </label>
+
+                      <input
+                        type="text"
+                        class="form-control auto-field"
+                        id="uom"
+                        readonly
+                      />
+                    </div>
+
+                    <div class="col-6">
+                      <label class="form-label required"> Type </label>
+
+                      <select
+                        class="form-select auto-field"
+                        id="load_type"
+                        disabled
+                      >
+                        <option value="BULK">BULK</option>
+
+                        <option value="TUBE">TUBE</option>
+
+                        <option value="CYLINDER">CYLINDER</option>
+                      </select>
+
+                      <div class="form-text">Automatically based on Plant</div>
+                    </div>
+
+                    <div class="col-6">
+                      <label class="form-label"> Load Note </label>
+
+                      <input type="text" class="form-control" id="load_note" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- ==================================================
+                     ACTION
+                =================================================== -->
+
+              <div class="card action-card">
+                <div class="card-body">
+                  <div class="d-flex gap-2">
+                    <button
+                      type="button"
+                      class="btn btn-outline-primary"
+                      id="previewBtn"
+                    >
+                      Preview JSON
+                    </button>
+
+                    <button type="button" class="btn btn-primary" id="sendBtn">
+                      <span id="sendText"> Send Request </span>
+
+                      <span
+                        id="sendLoading"
+                        class="spinner-border spinner-border-sm ms-1 d-none"
+                      ></span>
+                    </button>
+
+                    <button
+                      type="button"
+                      class="btn btn-outline-secondary"
+                      id="resetBtn"
+                    >
+                      Reset
+                    </button>
+                  </div>
+
+                  <div class="progress mt-2 d-none" id="sendProgressContainer">
+                    <div
+                      id="sendProgress"
+                      class="progress-bar"
+                      role="progressbar"
+                      style="width: 0%"
+                    ></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- ==================================================
+                     OUTPUT
+                =================================================== -->
+
+              <div class="card output-card">
+                <div class="card-body">
+                  <ul class="nav nav-tabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                      <button
+                        class="nav-link active"
+                        data-bs-toggle="tab"
+                        data-bs-target="#requestTab"
+                        type="button"
+                      >
+                        Request JSON
+                      </button>
+                    </li>
+
+                    <li class="nav-item" role="presentation">
+                      <button
+                        class="nav-link"
+                        data-bs-toggle="tab"
+                        data-bs-target="#responseTab"
+                        type="button"
+                      >
+                        Results
+                      </button>
+                    </li>
+                  </ul>
+
+                  <div class="tab-content">
+                    <div class="tab-pane fade show active" id="requestTab">
+                      <textarea id="requestBody" readonly></textarea>
+                    </div>
+
+                    <div class="tab-pane fade" id="responseTab">
+                      <pre id="responseBody">No response yet.</pre>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+      $(document).ready(function () {
+        /* ==========================================================
+       CONSTANT
+    ========================================================== */
+
+        var RELEASE_NUMBER_STORAGE_KEY = "delivery_api_release_number";
+
+        /* ==========================================================
+       PLANT CONFIG
+    ========================================================== */
+
+        var plantConfig = {
+          SGI040P1: {
+            type: "CYLINDER",
+
+            uom: "PC",
+
+            skus: ["CYOXGFMP0010070"],
+          },
+
+          SIG007ST: {
+            type: "TUBE",
+
+            uom: "M3",
+
+            skus: ["BULAR0010000000"],
+          },
+
+          SGI060ST: {
+            type: "BULK",
+
+            uom: "M3",
+
+            skus: [
+              "BUHID0010000000",
+              "BUCAR0020000000",
+              "BULOX0010000000",
+              "BULIN0010000000",
+            ],
+          },
+        };
+
+        /* ==========================================================
+       GET VALUE
+    ========================================================== */
+
+        function getValue(id) {
+          return $("#" + id).val();
+        }
+
+        /* ==========================================================
+       DEFAULT PICKUP
+       
+       Tomorrow at 08:00
+    ========================================================== */
+
+        function setDefaultExpectedPickup() {
+          var tomorrow = new Date();
+
+          tomorrow.setDate(tomorrow.getDate() + 1);
+
+          tomorrow.setHours(8, 0, 0, 0);
+
+          var year = tomorrow.getFullYear();
+
+          var month = String(tomorrow.getMonth() + 1).padStart(2, "0");
+
+          var day = String(tomorrow.getDate()).padStart(2, "0");
+
+          $("#expected_pickup_on").val(
+            year + "-" + month + "-" + day + "T08:00",
+          );
+        }
+
+        /* ==========================================================
+       GET RELEASE NUMBER
+    ========================================================== */
+
+        function getReleaseNumber() {
+          var value = $("#release_number").val();
+
+          if (value === "" || value === null) {
+            return null;
+          }
+
+          return Number(value);
+        }
+
+        /* ==========================================================
+       SAVE RELEASE NUMBER
+    ========================================================== */
+
+        function saveReleaseNumber() {
+          var value = $("#release_number").val();
+
+          if (value !== "") {
+            localStorage.setItem(RELEASE_NUMBER_STORAGE_KEY, value);
+          }
+        }
+
+        /* ==========================================================
+       INITIALIZE RELEASE NUMBER
+    ========================================================== */
+
+        function initializeReleaseNumber() {
+          var saved = localStorage.getItem(RELEASE_NUMBER_STORAGE_KEY);
+
+          if (saved !== null && /^\d+$/.test(saved)) {
+            $("#release_number").val(saved);
+
+            return;
+          }
+
+          var number = $("#reference_number").val();
+
+          var digits = number.match(/\d/g);
+
+          var initialValue = 1;
+
+          if (digits && digits.length > 0) {
+            initialValue = Number(digits[digits.length - 1]);
+          }
+
+          $("#release_number").val(initialValue);
+
+          saveReleaseNumber();
+        }
+
+        /* ==========================================================
+       INCREMENT RELEASE NUMBER
+    ========================================================== */
+
+        function incrementReleaseNumber() {
+          var current = getReleaseNumber();
+
+          if (current === null || isNaN(current)) {
+            current = 0;
+          }
+
+          current++;
+
+          $("#release_number").val(current);
+
+          saveReleaseNumber();
+
+          updatePreview();
+        }
+
+        /* ==========================================================
+       GET ADDRESSES
+    ========================================================== */
+
+        function getAddresses() {
+          var raw = $("#customer_address_id").val();
+
+          return raw
+            .split(/\r?\n/)
+            .map(function (address) {
+              return address.trim();
+            })
+            .filter(function (address) {
+              return address.length > 0;
+            });
+        }
+
+        /* ==========================================================
+       UPDATE ADDRESS COUNTER
+    ========================================================== */
+
+        function updateAddressCounter() {
+          var addresses = getAddresses();
+
+          $("#addressCounter").text(
+            addresses.length +
+              (addresses.length === 1 ? " address" : " addresses"),
+          );
+        }
+
+        /* ==========================================================
+       UPDATE PLANT
+    ========================================================== */
+
+        function updatePlantFields() {
+          var plant = $("#plant").val();
+
+          var config = plantConfig[plant];
+
+          if (!config) {
+            return;
+          }
+
+          $("#load_type").val(config.type);
+
+          $("#uom").val(config.uom);
+
+          var skuSelect = $("#sku_name");
+
+          skuSelect.empty();
+
+          $.each(config.skus, function (index, sku) {
+            skuSelect.append(
+              $("<option>", {
+                value: sku,
+
+                text: sku,
+              }),
+            );
+          });
+
+          updatePreview();
+        }
+
+        /* ==========================================================
+       PICKUP DATE → ISO
+    ========================================================== */
+
+        function getExpectedPickupOn() {
+          var value = $("#expected_pickup_on").val();
+
+          if (!value) {
+            return "";
+          }
+
+          return new Date(value).toISOString();
+        }
+
+        /* ==========================================================
+       BUILD PAYLOAD
+    ========================================================== */
+
+        function buildPayload(address, releaseNumber) {
+          return {
+            delivery_type: getValue("delivery_type"),
+
+            delivery_reference: {
+              plant: getValue("plant"),
+
+              number: getValue("reference_number"),
+
+              line_number: getValue("line_number"),
+
+              release_number: String(releaseNumber),
+            },
+
+            origin_source: getValue("origin_source"),
+
+            destination: {
+              customer_id: getValue("customer_id"),
+
+              customer_address_id: address,
+            },
+
+            expected_pickup_on: getExpectedPickupOn(),
+
+            delivery_load: {
+              sku_name: getValue("sku_name"),
+
+              quantity: Number(getValue("quantity")),
+
+              uom: getValue("uom"),
+
+              note: getValue("load_note"),
+
+              type: getValue("load_type"),
+            },
+
+            note: getValue("note"),
+          };
+        }
+
+        /* ==========================================================
+       PREVIEW JSON
+       
+       Preview shows all addresses as separate requests.
+    ========================================================== */
+
+        function updatePreview() {
+          var addresses = getAddresses();
+
+          var releaseNumber = getReleaseNumber();
+
+          if (releaseNumber === null) {
+            releaseNumber = 1;
+          }
+
+          var previews = [];
+
+          $.each(addresses, function (index, address) {
+            previews.push(buildPayload(address, releaseNumber + index));
+          });
+
+          $("#requestBody").val(JSON.stringify(previews, null, 4));
+        }
+
+        /* ==========================================================
+       STATUS
+    ========================================================== */
+
+        function setStatus(text, type) {
+          $("#statusBadge")
+            .removeClass(
+              "bg-secondary " + "bg-success " + "bg-danger " + "bg-warning",
+            )
+            .addClass("bg-" + type)
+            .text(text);
+        }
+
+        /* ==========================================================
+       NUMBER VALIDATION
+    ========================================================== */
+
+        $("#reference_number").on("input", function () {
+          var value = $(this).val();
+
+          value = value.replace(/[^a-zA-Z0-9._]/g, "");
+
+          $(this).val(value);
+
+          updatePreview();
+        });
+
+        /* ==========================================================
+       RELEASE NUMBER VALIDATION
+    ========================================================== */
+
+        $("#release_number").on("input", function () {
+          var value = $(this).val();
+
+          value = value.replace(/\D/g, "");
+
+          $(this).val(value);
+
+          saveReleaseNumber();
+
+          updatePreview();
+        });
+
+        /* ==========================================================
+       RELEASE NUMBER BLUR
+    ========================================================== */
+
+        $("#release_number").on("blur", function () {
+          var value = $(this).val();
+
+          if (value === "") {
+            $(this).val(1);
+
+            saveReleaseNumber();
+
+            updatePreview();
+          }
+        });
+
+        /* ==========================================================
+       ADDRESS CHANGE
+    ========================================================== */
+
+        $("#customer_address_id").on("input", function () {
+          updateAddressCounter();
+
+          updatePreview();
+        });
+
+        /* ==========================================================
+       PLANT CHANGE
+    ========================================================== */
+
+        $("#plant").on("change", function () {
+          updatePlantFields();
+        });
+
+        /* ==========================================================
+       AUTO UPDATE PREVIEW
+    ========================================================== */
+
+        $(
+          "#endpoint, " +
+            "#token, " +
+            "#delivery_type, " +
+            "#origin_source, " +
+            "#expected_pickup_on, " +
+            "#note, " +
+            "#plant, " +
+            "#line_number, " +
+            "#customer_id, " +
+            "#sku_name, " +
+            "#quantity, " +
+            "#uom, " +
+            "#load_type, " +
+            "#load_note",
+        ).on("input change", function () {
+          updatePreview();
+        });
+
+        /* ==========================================================
+       PREVIEW
+    ========================================================== */
+
+        $("#previewBtn").on("click", function () {
+          updatePreview();
+        });
+
+        /* ==========================================================
+       SEND ONE REQUEST
+    ========================================================== */
+
+        function sendOneRequest(address, releaseNumber) {
+          return new Promise(function (resolve) {
+            var endpoint = getValue("endpoint");
+
+            var token = getValue("token");
+
+            var payload = buildPayload(address, releaseNumber);
+
+            $.ajax({
+              url: endpoint,
+
+              method: "POST",
+
+              headers: {
+                accept: "application/json",
+
+                Authorization: "Bearer " + token,
+
+                "Content-Type": "application/json",
+              },
+
+              data: JSON.stringify(payload),
+
+              dataType: "text",
+
+              success: function (response, textStatus, xhr) {
+                var parsedResponse;
+
+                try {
+                  parsedResponse = JSON.parse(response);
+                } catch (e) {
+                  parsedResponse = response;
+                }
+
+                resolve({
+                  success: true,
+
+                  address: address,
+
+                  releaseNumber: releaseNumber,
+
+                  status: xhr.status,
+
+                  response: parsedResponse,
+                });
+              },
+
+              error: function (xhr, textStatus, errorThrown) {
+                var response = xhr.responseText;
+
+                var parsedResponse;
+
+                try {
+                  parsedResponse = JSON.parse(response);
+                } catch (e) {
+                  parsedResponse = response || errorThrown || textStatus;
+                }
+
+                resolve({
+                  success: false,
+
+                  address: address,
+
+                  releaseNumber: releaseNumber,
+
+                  status: xhr.status,
+
+                  response: parsedResponse,
+                });
+              },
+            });
+          });
+        }
+
+        /* ==========================================================
+       SEND ALL
+       
+       IMPORTANT:
+       Requests are sent sequentially.
+    ========================================================== */
+
+        $("#sendBtn").on("click", async function () {
+          var endpoint = getValue("endpoint");
+
+          var token = getValue("token");
+
+          var number = getValue("reference_number");
+
+          var releaseNumber = getReleaseNumber();
+
+          var addresses = getAddresses();
+
+          /* --------------------------------------------------
+               VALIDATION
+            -------------------------------------------------- */
+
+          if (!endpoint) {
+            alert("Endpoint wajib diisi.");
+
+            $("#endpoint").focus();
+
+            return;
+          }
+
+          if (!token) {
+            alert("Bearer Token wajib diisi.");
+
+            $("#token").focus();
+
+            return;
+          }
+
+          if (!number) {
+            alert("Number wajib diisi.");
+
+            $("#reference_number").focus();
+
+            return;
+          }
+
+          if (!/^[a-zA-Z0-9._]+$/.test(number)) {
+            alert(
+              "Number hanya boleh berisi huruf, angka, titik (.) dan underscore (_).",
+            );
+
+            $("#reference_number").focus();
+
+            return;
+          }
+
+          if (
+            releaseNumber === null ||
+            !Number.isInteger(releaseNumber) ||
+            releaseNumber < 0
+          ) {
+            alert("Release Number harus berupa angka.");
+
+            $("#release_number").focus();
+
+            return;
+          }
+
+          if (addresses.length === 0) {
+            alert("Minimal satu Customer Address ID harus diisi.");
+
+            $("#customer_address_id").focus();
+
+            return;
+          }
+
+          if (!getValue("expected_pickup_on")) {
+            alert("Expected Pickup On wajib diisi.");
+
+            $("#expected_pickup_on").focus();
+
+            return;
+          }
+
+          /* --------------------------------------------------
+               CONFIRM
+            -------------------------------------------------- */
+
+          var confirmed = confirm(
+            "Akan mengirim " +
+              addresses.length +
+              " request.\n\n" +
+              "Release Number mulai dari " +
+              releaseNumber +
+              ".\n\n" +
+              "Lanjutkan?",
+          );
+
+          if (!confirmed) {
+            return;
+          }
+
+          /* --------------------------------------------------
+               UI LOADING
+            -------------------------------------------------- */
+
+          $("#sendBtn").prop("disabled", true);
+
+          $("#previewBtn").prop("disabled", true);
+
+          $("#resetBtn").prop("disabled", true);
+
+          $("#sendText").text("Sending 0/" + addresses.length);
+
+          $("#sendLoading").removeClass("d-none");
+
+          $("#sendProgressContainer").removeClass("d-none");
+
+          $("#sendProgress").css("width", "0%");
+
+          setStatus("Sending...", "warning");
+
+          $("#responseBody").text("");
+
+          /* --------------------------------------------------
+               SHOW RESULTS TAB
+            -------------------------------------------------- */
+
+          var responseTab = document.querySelector(
+            '[data-bs-target="#responseTab"]',
+          );
+
+          if (responseTab) {
+            bootstrap.Tab.getOrCreateInstance(responseTab).show();
+          }
+
+          /* --------------------------------------------------
+               RESULTS
+            -------------------------------------------------- */
+
+          var results = [];
+
+          /*
+           * Current release number.
+           *
+           * This changes ONLY after success.
+           */
+
+          var currentRelease = releaseNumber;
+
+          /* --------------------------------------------------
+               SEND SEQUENTIALLY
+            -------------------------------------------------- */
+
+          for (var i = 0; i < addresses.length; i++) {
+            var address = addresses[i];
+
+            $("#sendText").text("Sending " + (i + 1) + "/" + addresses.length);
+
+            var result = await sendOneRequest(address, currentRelease);
+
+            results.push(result);
+
+            /* ----------------------------------------------
+                   SUCCESS
+                ---------------------------------------------- */
+
+            if (result.success) {
+              /*
+               * Only increment after
+               * successful request.
+               */
+
+              currentRelease++;
+
+              /*
+               * Save latest release number.
+               */
+
+              $("#release_number").val(currentRelease);
+
+              saveReleaseNumber();
+            }
+
+            /* ----------------------------------------------
+                   PROGRESS
+                ---------------------------------------------- */
+
+            var progress = Math.round(((i + 1) / addresses.length) * 100);
+
+            $("#sendProgress").css("width", progress + "%");
+
+            /*
+             * Update preview so the next
+             * release number is visible.
+             */
+
+            updatePreview();
+          }
+
+          /* --------------------------------------------------
+               BUILD FINAL RESULT
+            -------------------------------------------------- */
+
+          var output = "";
+
+          $.each(results, function (index, result) {
+            output += "==================================================\n";
+
+            output += "REQUEST " + (index + 1) + "\n";
+
+            output += "==================================================\n";
+
+            output += "Address       : " + result.address + "\n";
+
+            output += "Release Number: " + result.releaseNumber + "\n";
+
+            output += "Status        : " + result.status + "\n";
+
+            output +=
+              "Result        : " +
+              (result.success ? "SUCCESS" : "FAILED") +
+              "\n\n";
+
+            output += JSON.stringify(result.response, null, 4);
+
+            output += "\n\n";
+          });
+
+          $("#responseBody").text(output);
+
+          /* --------------------------------------------------
+               FINAL STATUS
+            -------------------------------------------------- */
+
+          var successCount = results.filter(function (item) {
+            return item.success;
+          }).length;
+
+          var failedCount = results.length - successCount;
+
+          if (failedCount === 0) {
+            setStatus(
+              "All " + successCount + " requests successful",
+
+              "success",
+            );
+          } else {
+            setStatus(
+              successCount + " success / " + failedCount + " failed",
+
+              "danger",
+            );
+          }
+
+          /* --------------------------------------------------
+               FINISH
+            -------------------------------------------------- */
+
+          $("#sendBtn").prop("disabled", false);
+
+          $("#previewBtn").prop("disabled", false);
+
+          $("#resetBtn").prop("disabled", false);
+
+          $("#sendText").text("Send Request");
+
+          $("#sendLoading").addClass("d-none");
+        });
+
+        /* ==========================================================
+       TOGGLE TOKEN
+    ========================================================== */
+
+        $("#toggleToken").on("click", function () {
+          var input = $("#token");
+
+          if (input.attr("type") === "password") {
+            input.attr("type", "text");
+          } else {
+            input.attr("type", "password");
+          }
+        });
+
+        /* ==========================================================
+       RESET
+    ========================================================== */
+
+        $("#resetBtn").on("click", function () {
+          $("#endpoint").val("https://xxx");
+
+          $("#token").val("");
+
+          $("#delivery_type").val("SALES ORDER");
+
+          $("#origin_source").val("-");
+
+          $("#plant").val("SGI060ST");
+
+          $("#reference_number").val("1001");
+
+          $("#line_number").val("1");
+
+          $("#customer_id").val("FD001");
+
+          $("#customer_address_id").val("ZXC-Address-4");
+
+          $("#quantity").val("10000");
+
+          $("#load_note").val("");
+
+          $("#note").val("");
+
+          setDefaultExpectedPickup();
+
+          /*
+           * Reset release number to 1.
+           */
+
+          $("#release_number").val(1);
+
+          saveReleaseNumber();
+
+          updatePlantFields();
+
+          updateAddressCounter();
+
+          updatePreview();
+
+          $("#responseBody").text("No response yet.");
+
+          setStatus("Not sent", "secondary");
+
+          $("#sendProgressContainer").addClass("d-none");
+        });
+
+        /* ==========================================================
+       INITIALIZE
+    ========================================================== */
+
+        setDefaultExpectedPickup();
+
+        initializeReleaseNumber();
+
+        updatePlantFields();
+
+        updateAddressCounter();
+
+        updatePreview();
+      });
+    </script>
+  </body>
+</html>
