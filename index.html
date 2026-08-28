@@ -3,17 +3,21 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <title>Create DO</title>
 
-    <!-- Bootstrap -->
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
       rel="stylesheet"
     />
 
-    <!-- jQuery -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+      rel="stylesheet"
+    />
+
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
     <style>
@@ -40,7 +44,7 @@
 
       .app-header {
         flex: 0 0 auto;
-        padding: 12px 20px 8px;
+        padding: 10px 20px 8px;
       }
 
       .app-header h4 {
@@ -50,7 +54,7 @@
 
       .app-header p {
         margin: 2px 0 0;
-        font-size: 13px;
+        font-size: 12px;
       }
 
       .main-content {
@@ -75,30 +79,30 @@
       }
 
       .card-body {
-        padding: 14px;
+        padding: 12px;
       }
 
       .section-card {
-        margin-bottom: 10px;
+        margin-bottom: 8px;
       }
 
       .section-title {
-        font-size: 14px;
+        font-size: 13px;
         font-weight: 600;
-        margin-bottom: 10px;
+        margin-bottom: 8px;
       }
 
       .form-label {
-        font-size: 12px;
+        font-size: 11px;
         font-weight: 500;
-        margin-bottom: 4px;
+        margin-bottom: 3px;
       }
 
       .form-control,
       .form-select {
-        font-size: 13px;
-        min-height: 34px;
-        padding: 5px 9px;
+        font-size: 12px;
+        min-height: 32px;
+        padding: 4px 8px;
       }
 
       textarea.form-control {
@@ -106,7 +110,7 @@
       }
 
       .form-text {
-        font-size: 10px;
+        font-size: 9px;
         margin-top: 2px;
       }
 
@@ -117,6 +121,11 @@
 
       .auto-field {
         background-color: #f8f9fa;
+      }
+
+      .address-counter {
+        font-size: 10px;
+        color: #6c757d;
       }
 
       .right-panel {
@@ -130,14 +139,10 @@
         flex: 0 0 auto;
       }
 
-      .btn {
-        font-size: 13px;
-      }
-
       .output-card {
         flex: 1;
         min-height: 0;
-        margin-top: 10px;
+        margin-top: 8px;
       }
 
       .output-card .card-body {
@@ -148,14 +153,14 @@
       }
 
       .nav-tabs .nav-link {
-        font-size: 12px;
-        padding: 6px 12px;
+        font-size: 11px;
+        padding: 5px 10px;
       }
 
       .tab-content {
         flex: 1;
         min-height: 0;
-        margin-top: 8px;
+        margin-top: 6px;
       }
 
       .tab-pane {
@@ -167,19 +172,14 @@
         width: 100%;
         height: 100%;
         resize: none;
-
         font-family: Consolas, Monaco, monospace;
-
-        font-size: 11px;
+        font-size: 10px;
         line-height: 1.4;
-
         background: #212529;
         color: #f8f9fa;
-
         border: 0;
         border-radius: 5px;
-
-        padding: 10px;
+        padding: 8px;
       }
 
       #responseBody {
@@ -188,13 +188,31 @@
         word-break: break-word;
       }
 
-      .address-counter {
-        font-size: 11px;
+      .total-box {
+        border-radius: 6px;
+        padding: 8px 10px;
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+      }
+
+      .total-label {
+        font-size: 10px;
         color: #6c757d;
+      }
+
+      .total-value {
+        font-size: 18px;
+        font-weight: 700;
       }
 
       .progress {
         height: 5px;
+      }
+
+      .release-current {
+        font-size: 10px;
+        color: #6c757d;
+        margin-top: 2px;
       }
 
       @media (max-width: 991px) {
@@ -228,36 +246,28 @@
 
   <body>
     <div class="app-wrapper">
-      <!-- ======================================================
-     HEADER
-======================================================= -->
+      <!-- HEADER -->
 
       <div class="app-header">
         <div class="d-flex justify-content-between align-items-center">
           <div>
             <h4>Create DO from API</h4>
 
-            <p class="text-muted">Create and send delivery requests</p>
+            <p class="text-muted">Create Delivery Order from API</p>
           </div>
 
-          <div>
-            <span id="statusBadge" class="badge bg-secondary"> Not sent </span>
-          </div>
+          <span id="statusBadge" class="badge bg-secondary"> Not sent </span>
         </div>
       </div>
 
-      <!-- ======================================================
-     MAIN
-======================================================= -->
+      <!-- MAIN -->
 
       <div class="main-content">
         <div class="row g-3 main-row">
-          <!-- ==================================================
-             LEFT COLUMN
-        =================================================== -->
+          <!-- LEFT -->
 
           <div class="col-lg-6 column">
-            <!-- API CONFIGURATION -->
+            <!-- API -->
 
             <div class="card section-card">
               <div class="card-body">
@@ -290,8 +300,9 @@
                         type="button"
                         class="btn btn-outline-secondary"
                         id="toggleToken"
+                        title="Show / Hide Token"
                       >
-                        👁
+                        <i id="tokenEye" class="bi bi-eye"></i>
                       </button>
                     </div>
                   </div>
@@ -338,8 +349,6 @@
                       class="form-control"
                       id="expected_pickup_on"
                     />
-
-                    <div class="form-text">Default: tomorrow 08:00</div>
                   </div>
 
                   <div class="col-6">
@@ -378,10 +387,11 @@
                       class="form-control"
                       id="reference_number"
                       value="1001"
+                      autocomplete="off"
                     />
 
                     <div class="form-text">
-                      Only letters, numbers, dot and underscore
+                      Alphanumeric, dot and underscore only
                     </div>
                   </div>
 
@@ -408,19 +418,17 @@
                       value="1"
                     />
 
-                    <div class="form-text">
-                      Manual input. Will NOT auto increment.
-                    </div>
+                    <div class="release-current">Naik +1 setiap request</div>
                   </div>
                 </div>
               </div>
             </div>
 
-            <!-- DESTINATION -->
+            <!-- CUSTOMER -->
 
             <div class="card section-card">
               <div class="card-body">
-                <div class="section-title">Destination</div>
+                <div class="section-title">Customer & Address</div>
 
                 <div class="row g-2">
                   <div class="col-6">
@@ -435,6 +443,31 @@
                   </div>
 
                   <div class="col-6">
+                    <div class="d-flex justify-content-between">
+                      <label class="form-label required">
+                        Jumlah DO per Address
+                      </label>
+
+                      <span id="totalDoSmall" class="address-counter">
+                        Total DO: 0
+                      </span>
+                    </div>
+
+                    <input
+                      type="number"
+                      class="form-control"
+                      id="copy_count"
+                      min="1"
+                      step="1"
+                      value="1"
+                    />
+
+                    <div class="form-text">
+                      Jumlah DO yang dibuat untuk setiap address
+                    </div>
+                  </div>
+
+                  <div class="col-12">
                     <div class="d-flex justify-content-between">
                       <label class="form-label required">
                         Customer Address ID
@@ -459,13 +492,11 @@
             </div>
           </div>
 
-          <!-- ==================================================
-             RIGHT COLUMN
-        =================================================== -->
+          <!-- RIGHT -->
 
           <div class="col-lg-6 column">
             <div class="right-panel">
-              <!-- DELIVERY LOAD -->
+              <!-- LOAD -->
 
               <div class="card section-card">
                 <div class="card-body">
@@ -476,10 +507,6 @@
                       <label class="form-label required"> SKU Name </label>
 
                       <select class="form-select" id="sku_name"></select>
-
-                      <div class="form-text">
-                        Automatically filtered by Plant
-                      </div>
                     </div>
 
                     <div class="col-3">
@@ -508,25 +535,42 @@
                     <div class="col-6">
                       <label class="form-label required"> Type </label>
 
-                      <select
-                        class="form-select auto-field"
+                      <input
+                        type="text"
+                        class="form-control auto-field"
                         id="load_type"
-                        disabled
-                      >
-                        <option value="BULK">BULK</option>
-
-                        <option value="TUBE">TUBE</option>
-
-                        <option value="CYLINDER">CYLINDER</option>
-                      </select>
-
-                      <div class="form-text">Automatically based on Plant</div>
+                        readonly
+                      />
                     </div>
 
                     <div class="col-6">
                       <label class="form-label"> Load Note </label>
 
                       <input type="text" class="form-control" id="load_note" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- TOTAL -->
+
+              <div class="card section-card">
+                <div class="card-body">
+                  <div class="row g-2">
+                    <div class="col-6">
+                      <div class="total-box">
+                        <div class="total-label">Addresses</div>
+
+                        <div class="total-value" id="totalAddresses">0</div>
+                      </div>
+                    </div>
+
+                    <div class="col-6">
+                      <div class="total-box">
+                        <div class="total-label">Total DO / Requests</div>
+
+                        <div class="total-value" id="totalDO">0</div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -546,7 +590,7 @@
                     </button>
 
                     <button type="button" class="btn btn-primary" id="sendBtn">
-                      <span id="sendText"> Send Request </span>
+                      <span id="sendText"> Send All </span>
 
                       <span
                         id="sendLoading"
@@ -578,24 +622,22 @@
 
               <div class="card output-card">
                 <div class="card-body">
-                  <ul class="nav nav-tabs" role="tablist">
-                    <li class="nav-item" role="presentation">
+                  <ul class="nav nav-tabs">
+                    <li class="nav-item">
                       <button
                         class="nav-link active"
                         data-bs-toggle="tab"
                         data-bs-target="#requestTab"
-                        type="button"
                       >
                         Request JSON
                       </button>
                     </li>
 
-                    <li class="nav-item" role="presentation">
+                    <li class="nav-item">
                       <button
                         class="nav-link"
                         data-bs-toggle="tab"
                         data-bs-target="#responseTab"
-                        type="button"
                       >
                         Results
                       </button>
@@ -619,12 +661,29 @@
       </div>
     </div>
 
-    <!-- Bootstrap JS -->
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
       $(document).ready(function () {
+        /* ==========================================================
+   SHOW / HIDE BEARER TOKEN
+========================================================== */
+
+        $("#toggleToken").on("click", function () {
+          const tokenInput = $("#token");
+          const tokenEye = $("#tokenEye");
+
+          if (tokenInput.attr("type") === "password") {
+            tokenInput.attr("type", "text");
+
+            tokenEye.removeClass("bi-eye").addClass("bi-eye-slash");
+          } else {
+            tokenInput.attr("type", "password");
+
+            tokenEye.removeClass("bi-eye-slash").addClass("bi-eye");
+          }
+        });
+
         /* ==========================================================
        PLANT CONFIGURATION
     ========================================================== */
@@ -661,31 +720,22 @@
         };
 
         /* ==========================================================
-       GET VALUE
-    ========================================================== */
-
-        function getValue(id) {
-          return $("#" + id).val();
-        }
-
-        /* ==========================================================
-       DEFAULT EXPECTED PICKUP
-       
-       Tomorrow at 08:00
+       DEFAULT PICKUP
+       TOMORROW 08:00
     ========================================================== */
 
         function setDefaultExpectedPickup() {
-          const tomorrow = new Date();
+          const date = new Date();
 
-          tomorrow.setDate(tomorrow.getDate() + 1);
+          date.setDate(date.getDate() + 1);
 
-          tomorrow.setHours(8, 0, 0, 0);
+          date.setHours(8, 0, 0, 0);
 
-          const year = tomorrow.getFullYear();
+          const year = date.getFullYear();
 
-          const month = String(tomorrow.getMonth() + 1).padStart(2, "0");
+          const month = String(date.getMonth() + 1).padStart(2, "0");
 
-          const day = String(tomorrow.getDate()).padStart(2, "0");
+          const day = String(date.getDate()).padStart(2, "0");
 
           $("#expected_pickup_on").val(
             year + "-" + month + "-" + day + "T08:00",
@@ -693,37 +743,60 @@
         }
 
         /* ==========================================================
-       GET ADDRESSES
+       ADDRESSES
     ========================================================== */
 
         function getAddresses() {
-          const raw = $("#customer_address_id").val();
-
-          return raw
+          return $("#customer_address_id")
+            .val()
             .split(/\r?\n/)
-            .map(function (address) {
-              return address.trim();
+            .map(function (item) {
+              return item.trim();
             })
-            .filter(function (address) {
-              return address.length > 0;
+            .filter(function (item) {
+              return item !== "";
             });
         }
 
         /* ==========================================================
-       UPDATE ADDRESS COUNTER
+       COPY COUNT
     ========================================================== */
 
-        function updateAddressCounter() {
+        function getCopyCount() {
+          let count = parseInt($("#copy_count").val(), 10);
+
+          if (isNaN(count) || count < 1) {
+            count = 1;
+          }
+
+          return count;
+        }
+
+        /* ==========================================================
+       TOTAL
+    ========================================================== */
+
+        function updateTotals() {
           const addresses = getAddresses();
+
+          const copy = getCopyCount();
+
+          const total = addresses.length * copy;
 
           $("#addressCounter").text(
             addresses.length +
               (addresses.length === 1 ? " address" : " addresses"),
           );
+
+          $("#totalAddresses").text(addresses.length);
+
+          $("#totalDO").text(total);
+
+          $("#totalDoSmall").text("Total DO: " + total);
         }
 
         /* ==========================================================
-       UPDATE PLANT
+       PLANT
     ========================================================== */
 
         function updatePlantFields() {
@@ -735,26 +808,20 @@
             return;
           }
 
-          /* TYPE */
-
           $("#load_type").val(config.type);
-
-          /* UOM */
 
           $("#uom").val(config.uom);
 
-          /* SKU */
+          const sku = $("#sku_name");
 
-          const skuSelect = $("#sku_name");
+          sku.empty();
 
-          skuSelect.empty();
-
-          $.each(config.skus, function (index, sku) {
-            skuSelect.append(
+          $.each(config.skus, function (index, value) {
+            sku.append(
               $("<option>", {
-                value: sku,
+                value: value,
 
-                text: sku,
+                text: value,
               }),
             );
           });
@@ -763,10 +830,10 @@
         }
 
         /* ==========================================================
-       EXPECTED PICKUP → ISO FORMAT
+       PICKUP FORMAT
     ========================================================== */
 
-        function getExpectedPickupOn() {
+        function getExpectedPickup() {
           const value = $("#expected_pickup_on").val();
 
           if (!value) {
@@ -777,84 +844,83 @@
         }
 
         /* ==========================================================
-       GET RELEASE NUMBER
-       
-       IMPORTANT:
-       NO AUTO INCREMENT
-    ========================================================== */
-
-        function getReleaseNumber() {
-          const value = $("#release_number").val();
-
-          if (value === "" || value === null) {
-            return null;
-          }
-
-          return Number(value);
-        }
-
-        /* ==========================================================
        BUILD PAYLOAD
        
-       Same release number for every address.
+       IMPORTANT:
+       Release Number diambil dari
+       field saat payload dibuat.
     ========================================================== */
 
-        function buildPayload(address) {
-          const releaseNumber = getReleaseNumber();
-
+        function buildPayload(address, releaseNumber) {
           return {
-            delivery_type: getValue("delivery_type"),
+            delivery_type: $("#delivery_type").val(),
 
             delivery_reference: {
-              plant: getValue("plant"),
+              plant: $("#plant").val(),
 
-              number: getValue("reference_number"),
+              number: $("#reference_number").val(),
 
-              line_number: getValue("line_number"),
+              line_number: $("#line_number").val(),
 
               release_number: String(releaseNumber),
             },
 
-            origin_source: getValue("origin_source"),
+            origin_source: $("#origin_source").val(),
 
             destination: {
-              customer_id: getValue("customer_id"),
+              customer_id: $("#customer_id").val(),
 
               customer_address_id: address,
             },
 
-            expected_pickup_on: getExpectedPickupOn(),
+            expected_pickup_on: getExpectedPickup(),
 
             delivery_load: {
-              sku_name: getValue("sku_name"),
+              sku_name: $("#sku_name").val(),
 
-              quantity: Number(getValue("quantity")),
+              quantity: Number($("#quantity").val()),
 
-              uom: getValue("uom"),
+              uom: $("#uom").val(),
 
-              note: getValue("load_note"),
+              note: $("#load_note").val(),
 
-              type: getValue("load_type"),
+              type: $("#load_type").val(),
             },
 
-            note: getValue("note"),
+            note: $("#note").val(),
           };
         }
 
         /* ==========================================================
-       PREVIEW JSON
+       PREVIEW
     ========================================================== */
 
         function updatePreview() {
+          updateTotals();
+
           const addresses = getAddresses();
 
-          const previews = [];
+          const copy = getCopyCount();
 
-          $.each(addresses, function (index, address) {
-            previews.push(buildPayload(address));
-          });
+          let release = parseInt($("#release_number").val(), 10);
 
-          $("#requestBody").val(JSON.stringify(previews, null, 4));
+          if (isNaN(release)) {
+            release = 1;
+          }
+
+          const payloads = [];
+
+          let counter = 0;
+
+          for (let c = 1; c <= copy; c++) {
+            $.each(addresses, function (index, address) {
+              payloads.push(buildPayload(address, release + counter));
+
+              counter++;
+            });
+          }
+
+          $("#requestBody").val(JSON.stringify(payloads, null, 4));
         }
 
         /* ==========================================================
@@ -874,13 +940,6 @@
 
         /* ==========================================================
        NUMBER VALIDATION
-       
-       Only:
-       A-Z
-       a-z
-       0-9
-       .
-       _
     ========================================================== */
 
         $("#reference_number").on("input", function () {
@@ -894,11 +953,7 @@
         });
 
         /* ==========================================================
-       RELEASE NUMBER VALIDATION
-       
-       Numeric only.
-       
-       NO AUTO INCREMENT.
+       RELEASE VALIDATION
     ========================================================== */
 
         $("#release_number").on("input", function () {
@@ -912,11 +967,25 @@
         });
 
         /* ==========================================================
-       ADDRESS CHANGE
+       ADDRESS
     ========================================================== */
 
         $("#customer_address_id").on("input", function () {
-          updateAddressCounter();
+          updatePreview();
+        });
+
+        /* ==========================================================
+       COPY
+    ========================================================== */
+
+        $("#copy_count").on("input", function () {
+          let value = parseInt($(this).val(), 10);
+
+          if (isNaN(value) || value < 1) {
+            value = 1;
+          }
+
+          $(this).val(value);
 
           updatePreview();
         });
@@ -930,7 +999,7 @@
         });
 
         /* ==========================================================
-       GENERAL INPUT CHANGE
+       GENERAL INPUT
     ========================================================== */
 
         $(
@@ -940,13 +1009,10 @@
             "#origin_source, " +
             "#expected_pickup_on, " +
             "#note, " +
-            "#plant, " +
             "#line_number, " +
             "#customer_id, " +
             "#sku_name, " +
             "#quantity, " +
-            "#uom, " +
-            "#load_type, " +
             "#load_note",
         ).on("input change", function () {
           updatePreview();
@@ -961,26 +1027,20 @@
         });
 
         /* ==========================================================
-       SEND ONE REQUEST
+       SEND SINGLE REQUEST
     ========================================================== */
 
-        function sendOneRequest(address) {
+        function sendRequest(payload, address, index, releaseNumber) {
           return new Promise(function (resolve) {
-            const endpoint = getValue("endpoint");
-
-            const token = getValue("token");
-
-            const payload = buildPayload(address);
-
             $.ajax({
-              url: endpoint,
+              url: $("#endpoint").val(),
 
               method: "POST",
 
               headers: {
                 accept: "application/json",
 
-                Authorization: "Bearer " + token,
+                Authorization: "Bearer " + $("#token").val(),
 
                 "Content-Type": "application/json",
               },
@@ -990,48 +1050,50 @@
               dataType: "text",
 
               success: function (response, textStatus, xhr) {
-                let parsedResponse;
+                let parsed;
 
                 try {
-                  parsedResponse = JSON.parse(response);
+                  parsed = JSON.parse(response);
                 } catch (e) {
-                  parsedResponse = response;
+                  parsed = response;
                 }
 
                 resolve({
                   success: true,
 
+                  index: index,
+
                   address: address,
 
-                  releaseNumber: getReleaseNumber(),
+                  release_number: releaseNumber,
 
                   status: xhr.status,
 
-                  response: parsedResponse,
+                  response: parsed,
                 });
               },
 
               error: function (xhr, textStatus, errorThrown) {
-                let response = xhr.responseText;
-
-                let parsedResponse;
+                let parsed;
 
                 try {
-                  parsedResponse = JSON.parse(response);
+                  parsed = JSON.parse(xhr.responseText);
                 } catch (e) {
-                  parsedResponse = response || errorThrown || textStatus;
+                  parsed = xhr.responseText || errorThrown || textStatus;
                 }
 
                 resolve({
                   success: false,
 
+                  index: index,
+
                   address: address,
 
-                  releaseNumber: getReleaseNumber(),
+                  release_number: releaseNumber,
 
                   status: xhr.status,
 
-                  response: parsedResponse,
+                  response: parsed,
                 });
               },
             });
@@ -1039,22 +1101,30 @@
         }
 
         /* ==========================================================
-       SEND ALL REQUESTS
+       SEND ALL
        
-       IMPORTANT:
-       Release Number is NOT changed.
+       RELEASE NUMBER:
+       
+       Request 1 = current release
+       Request 2 = current release + 1
+       Request 3 = current release + 2
+       dst...
+       
+       Increment dilakukan setelah setiap request selesai.
     ========================================================== */
 
         $("#sendBtn").on("click", async function () {
-          const endpoint = getValue("endpoint");
+          const endpoint = $("#endpoint").val().trim();
 
-          const token = getValue("token");
+          const token = $("#token").val().trim();
 
-          const number = getValue("reference_number");
+          const number = $("#reference_number").val().trim();
 
-          const releaseNumber = getReleaseNumber();
+          const releaseInput = $("#release_number").val().trim();
 
           const addresses = getAddresses();
+
+          const copy = getCopyCount();
 
           /* --------------------------------------------------
                VALIDATION
@@ -1063,15 +1133,11 @@
           if (!endpoint) {
             alert("Endpoint wajib diisi.");
 
-            $("#endpoint").focus();
-
             return;
           }
 
           if (!token) {
             alert("Bearer Token wajib diisi.");
-
-            $("#token").focus();
 
             return;
           }
@@ -1079,49 +1145,32 @@
           if (!number) {
             alert("Number wajib diisi.");
 
-            $("#reference_number").focus();
-
             return;
           }
 
           if (!/^[a-zA-Z0-9._]+$/.test(number)) {
             alert(
-              "Number hanya boleh berisi " +
-                "huruf, angka, titik (.) dan underscore (_).",
+              "Number hanya boleh berisi huruf, angka, titik dan underscore.",
             );
-
-            $("#reference_number").focus();
 
             return;
           }
 
-          if (
-            releaseNumber === null ||
-            !Number.isInteger(releaseNumber) ||
-            releaseNumber < 0
-          ) {
+          if (releaseInput === "" || !/^\d+$/.test(releaseInput)) {
             alert("Release Number harus berupa angka.");
-
-            $("#release_number").focus();
 
             return;
           }
 
           if (addresses.length === 0) {
-            alert("Minimal satu Customer Address ID harus diisi.");
-
-            $("#customer_address_id").focus();
+            alert("Minimal satu Customer Address ID.");
 
             return;
           }
 
-          if (!getValue("expected_pickup_on")) {
-            alert("Expected Pickup On wajib diisi.");
+          const total = addresses.length * copy;
 
-            $("#expected_pickup_on").focus();
-
-            return;
-          }
+          let currentRelease = parseInt(releaseInput, 10);
 
           /* --------------------------------------------------
                CONFIRM
@@ -1129,16 +1178,21 @@
 
           const confirmed = confirm(
             "Akan mengirim " +
+              total +
+              " DO / API request.\n\n" +
               addresses.length +
+              " address × " +
+              copy +
+              " DO per address = " +
+              total +
               " request.\n\n" +
-              "Number: " +
-              number +
+              "Release Number awal: " +
+              currentRelease +
               "\n" +
-              "Release Number: " +
-              releaseNumber +
+              "Release Number terakhir: " +
+              (currentRelease + total - 1) +
               "\n\n" +
-              "Semua request menggunakan " +
-              "Release Number yang sama.\n\n" +
+              "Release Number akan +1 setiap request.\n\n" +
               "Lanjutkan?",
           );
 
@@ -1147,7 +1201,7 @@
           }
 
           /* --------------------------------------------------
-               DISABLE UI
+               DISABLE
             -------------------------------------------------- */
 
           $("#sendBtn").prop("disabled", true);
@@ -1162,111 +1216,135 @@
 
           $("#sendProgress").css("width", "0%");
 
-          setStatus("Sending...", "warning");
-
           $("#responseBody").text("");
 
+          setStatus("Sending...", "warning");
+
           /* --------------------------------------------------
-               SHOW RESULT TAB
+               RESULT TAB
             -------------------------------------------------- */
 
-          const responseTab = document.querySelector(
+          const resultTab = document.querySelector(
             '[data-bs-target="#responseTab"]',
           );
 
-          if (responseTab) {
-            bootstrap.Tab.getOrCreateInstance(responseTab).show();
-          }
+          bootstrap.Tab.getOrCreateInstance(resultTab).show();
 
           /* --------------------------------------------------
-               RESULTS
+               SEND
             -------------------------------------------------- */
 
           const results = [];
 
-          /* --------------------------------------------------
-               SEND SEQUENTIALLY
-               
-               Same release number.
-            -------------------------------------------------- */
+          let requestIndex = 0;
 
-          for (let i = 0; i < addresses.length; i++) {
-            const address = addresses[i];
+          for (let c = 1; c <= copy; c++) {
+            for (let a = 0; a < addresses.length; a++) {
+              requestIndex++;
 
-            $("#sendText").text("Sending " + (i + 1) + "/" + addresses.length);
+              const address = addresses[a];
 
-            const result = await sendOneRequest(address);
+              /*
+               * IMPORTANT
+               *
+               * Release number diambil
+               * sebelum request.
+               */
 
-            results.push(result);
+              const requestRelease = currentRelease;
 
-            /* ----------------------------------------------
-                   PROGRESS
-                ---------------------------------------------- */
+              const payload = buildPayload(address, requestRelease);
 
-            const progress = Math.round(((i + 1) / addresses.length) * 100);
+              $("#sendText").text("Sending " + requestIndex + "/" + total);
 
-            $("#sendProgress").css("width", progress + "%");
+              /*
+               * SEND REQUEST
+               */
+
+              const result = await sendRequest(
+                payload,
+
+                address,
+
+                requestIndex,
+
+                requestRelease,
+              );
+
+              result.copy = c;
+
+              results.push(result);
+
+              /*
+               * IMPORTANT
+               *
+               * Setelah request selesai,
+               * Release Number langsung +1.
+               */
+
+              currentRelease++;
+
+              $("#release_number").val(currentRelease);
+
+              /*
+               * Progress
+               */
+
+              const progress = Math.round((requestIndex / total) * 100);
+
+              $("#sendProgress").css("width", progress + "%");
+
+              /*
+               * Update result
+               */
+
+              renderResults(results);
+
+              /*
+               * Update preview supaya
+               * Release Number berikutnya
+               * terlihat di UI.
+               */
+
+              updatePreview();
+            }
           }
 
           /* --------------------------------------------------
-               BUILD RESULT
+               SUMMARY
             -------------------------------------------------- */
 
-          let output = "";
-
-          $.each(results, function (index, result) {
-            output += "==================================================\n";
-
-            output += "REQUEST " + (index + 1) + "\n";
-
-            output += "==================================================\n";
-
-            output += "Address       : " + result.address + "\n";
-
-            output += "Number        : " + number + "\n";
-
-            output += "Release Number: " + result.releaseNumber + "\n";
-
-            output += "Status        : " + result.status + "\n";
-
-            output +=
-              "Result        : " +
-              (result.success ? "SUCCESS" : "FAILED") +
-              "\n\n";
-
-            output += JSON.stringify(result.response, null, 4);
-
-            output += "\n\n";
-          });
-
-          $("#responseBody").text(output);
-
-          /* --------------------------------------------------
-               COUNT RESULT
-            -------------------------------------------------- */
-
-          const successCount = results.filter(function (item) {
+          const success = results.filter(function (item) {
             return item.success;
           }).length;
 
-          const failedCount = results.length - successCount;
+          const failed = results.length - success;
 
-          if (failedCount === 0) {
+          if (failed === 0) {
             setStatus(
-              "All " + successCount + " requests successful",
+              "All " + success + " requests successful",
 
               "success",
             );
           } else {
             setStatus(
-              successCount + " success / " + failedCount + " failed",
+              success + " success / " + failed + " failed",
 
               "danger",
             );
           }
 
+          /*
+           * Pastikan Release Number
+           * menggunakan nilai terakhir.
+           */
+
+          $("#release_number").val(currentRelease);
+
+          updatePreview();
+
           /* --------------------------------------------------
-               FINISH
+               ENABLE
             -------------------------------------------------- */
 
           $("#sendBtn").prop("disabled", false);
@@ -1277,29 +1355,50 @@
 
           $("#sendLoading").addClass("d-none");
 
-          $("#sendText").text("Send Request");
+          $("#sendText").text("Send All");
         });
 
         /* ==========================================================
-       TOGGLE TOKEN
+       RENDER RESULTS
     ========================================================== */
 
-        $("#toggleToken").on("click", function () {
-          const input = $("#token");
+        function renderResults(results) {
+          let output = "";
 
-          if (input.attr("type") === "password") {
-            input.attr("type", "text");
-          } else {
-            input.attr("type", "password");
-          }
-        });
+          $.each(results, function (index, result) {
+            output += "==================================================\n";
+
+            output += "REQUEST #" + result.index + "\n";
+
+            output += "==================================================\n";
+
+            output += "DO ke          : " + result.copy + "\n";
+
+            output += "Address        : " + result.address + "\n";
+
+            output += "Release Number : " + result.release_number + "\n";
+
+            output += "HTTP Status    : " + result.status + "\n";
+
+            output +=
+              "Result         : " +
+              (result.success ? "SUCCESS" : "FAILED") +
+              "\n\n";
+
+            output += JSON.stringify(result.response, null, 4);
+
+            output += "\n\n";
+          });
+
+          $("#responseBody").text(output);
+        }
 
         /* ==========================================================
        RESET
     ========================================================== */
 
         $("#resetBtn").on("click", function () {
-          $("#endpoint").val("https://xxx");
+          $("#endpoint").val("https://url");
 
           $("#token").val("");
 
@@ -1313,14 +1412,11 @@
 
           $("#line_number").val("1");
 
-          /*
-           * Release Number remains manual.
-           * Reset value = 1.
-           */
-
           $("#release_number").val("1");
 
           $("#customer_id").val("FD001");
+
+          $("#copy_count").val("1");
 
           $("#customer_address_id").val("ZXC-Address-4");
 
@@ -1334,15 +1430,15 @@
 
           updatePlantFields();
 
-          updateAddressCounter();
-
           updatePreview();
 
           $("#responseBody").text("No response yet.");
 
-          setStatus("Not sent", "secondary");
-
           $("#sendProgressContainer").addClass("d-none");
+
+          $("#sendProgress").css("width", "0%");
+
+          setStatus("Not sent", "secondary");
         });
 
         /* ==========================================================
@@ -1352,8 +1448,6 @@
         setDefaultExpectedPickup();
 
         updatePlantFields();
-
-        updateAddressCounter();
 
         updatePreview();
       });
