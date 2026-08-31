@@ -892,6 +892,16 @@
           });
         }
 
+        function setSelectValue(selector, value) {
+          const select = $(selector);
+
+          select.val(value || "");
+
+          if (select.hasClass("select2-hidden-accessible")) {
+            select.trigger("change.select2");
+          }
+        }
+
         function getCustomerById(customerId) {
           return customerCatalog.customer.find(function (item) {
             return item.id === customerId;
@@ -986,8 +996,7 @@
         function syncCatalogDependencies() {
           const currentPlant = $("#plant").val();
           const currentCustomer = $("#customer_id").val();
-          const fallbackPlant =
-            plantCatalog.plant.length > 0 ? plantCatalog.plant[0].id : "";
+          const fallbackPlant = getDefaultPlantId();
           const fallbackCustomer =
             customerCatalog.customer.length > 0
               ? customerCatalog.customer[0].id
@@ -996,17 +1005,24 @@
           renderPlantOptions();
           renderCustomerOptions();
 
-          if (!getPlantById(currentPlant)) {
-            $("#plant").val(fallbackPlant);
-          }
+          setSelectValue(
+            "#plant",
+            getPlantById(currentPlant) ? currentPlant : fallbackPlant,
+          );
 
           if (!getCustomerById(currentCustomer)) {
-            $("#customer_id").val(fallbackCustomer);
+            setSelectValue("#customer_id", fallbackCustomer);
             setSelectedAddresses([]);
+          } else {
+            setSelectValue("#customer_id", currentCustomer);
           }
 
           updatePlantFields();
           updateCustomerFields();
+        }
+
+        function getDefaultPlantId() {
+          return plantCatalog.plant.length > 0 ? plantCatalog.plant[0].id : "";
         }
 
         function getDefaultCustomerId() {
@@ -1181,6 +1197,7 @@
             $("#load_type").val("");
             $("#uom").val("");
             $("#sku_name").empty();
+            $("#sku_name").trigger("change.select2");
             return;
           }
 
@@ -1207,6 +1224,7 @@
             sku.val(selectedPlant.sku[0].id);
           }
 
+          sku.trigger("change.select2");
           updateSkuMeta();
           updatePreview();
         }
@@ -1871,7 +1889,7 @@
 
           $("#origin_source").val("-");
 
-          $("#plant").val("SGI060ST");
+          setSelectValue("#plant", getDefaultPlantId());
 
           $("#reference_number").val("1001");
 
@@ -1879,7 +1897,7 @@
 
           $("#release_number").val("1");
 
-          $("#customer_id").val(getDefaultCustomerId());
+          setSelectValue("#customer_id", getDefaultCustomerId());
 
           $("#copy_count").val("1");
 
@@ -1921,11 +1939,11 @@
         $("#token").val("");
         $("#delivery_type").val("SALES ORDER");
         $("#origin_source").val("-");
-        $("#plant").val("SGI060ST");
+        setSelectValue("#plant", getDefaultPlantId());
         $("#reference_number").val("1001");
         $("#line_number").val("1");
         $("#release_number").val("1");
-        $("#customer_id").val(getDefaultCustomerId());
+        setSelectValue("#customer_id", getDefaultCustomerId());
         $("#copy_count").val("1");
         $("#quantity").val("10000");
         $("#load_note").val("");
