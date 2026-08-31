@@ -563,7 +563,7 @@
                         type="number"
                         class="form-control"
                         id="quantity"
-                        value="10000"
+                        value="10"
                         min="0"
                       />
                     </div>
@@ -1166,6 +1166,18 @@
           );
         }
 
+        function openExpectedPickupPicker() {
+          const input = document.getElementById("expected_pickup_on");
+
+          if (input && typeof input.showPicker === "function") {
+            try {
+              input.showPicker();
+            } catch (error) {
+              // Ignore browsers that block programmatic picker opening.
+            }
+          }
+        }
+
         /* ==========================================================
        ADDRESSES
     ========================================================== */
@@ -1534,6 +1546,10 @@
             "#load_note",
         ).on("input change", function () {
           updatePreview();
+        });
+
+        $("#expected_pickup_on").on("click", function () {
+          openExpectedPickupPicker();
         });
 
         $("#openJsonConfig").on("click", function () {
@@ -2067,7 +2083,7 @@
           setSelectedAddresses([]);
           populateAddressOptions($("#customer_id").val());
 
-          $("#quantity").val("10000");
+          $("#quantity").val("10");
 
           $("#load_note").val("");
 
@@ -2107,7 +2123,7 @@
         syncDeliveryReferenceFields();
         setSelectValue("#customer_id", getDefaultCustomerId());
         $("#copy_count").val("1");
-        $("#quantity").val("10000");
+        $("#quantity").val("10");
         $("#load_note").val("");
         $("#note").val("");
         updatePlantFields();
