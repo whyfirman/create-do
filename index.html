@@ -467,7 +467,9 @@
                       value="1"
                     />
 
-                    <div class="release-current">Naik +1 setiap request</div>
+                    <div class="release-current">
+                      Increases by 1 for each request
+                    </div>
                   </div>
                 </div>
               </div>
@@ -489,7 +491,7 @@
                   <div class="col-6 d-none">
                     <div class="d-flex justify-content-between">
                       <label class="form-label required">
-                        Jumlah DO per Address
+                        DO Count per Address
                       </label>
 
                       <span id="totalDoSmall" class="address-counter">
@@ -507,7 +509,7 @@
                     />
 
                     <div class="form-text">
-                      Jumlah DO yang dibuat untuk setiap address
+                      Number of DOs created for each address
                     </div>
                   </div>
 
@@ -529,7 +531,7 @@
                     ></select>
 
                     <div class="form-text">
-                      Multi select sesuai customer yang dipilih
+                      Multi-select based on the selected customer
                     </div>
                   </div>
                 </div>
@@ -717,7 +719,7 @@
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title" id="jsonConfigLabel">
-              Paste JSON Plant dan Customer
+              Paste Plant and Customer JSON
             </h5>
 
             <button
@@ -752,8 +754,8 @@
             </div>
 
             <div class="form-text mt-2">
-              Submit akan menyimpan JSON ke localStorage dan langsung dipakai
-              untuk dropdown Plant, Customer, dan Address.
+              Save will store the JSON in localStorage and use it immediately
+              for the Plant, Customer, and Address dropdowns.
             </div>
           </div>
 
@@ -777,6 +779,8 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
       $(document).ready(function () {
@@ -900,6 +904,27 @@
           if (select.hasClass("select2-hidden-accessible")) {
             select.trigger("change.select2");
           }
+        }
+
+        function showAlert(title, text, icon) {
+          return Swal.fire({
+            title: title,
+            text: text,
+            icon: icon || "warning",
+            confirmButtonText: "OK",
+          });
+        }
+
+        function showConfirm(title, html) {
+          return Swal.fire({
+            title: title,
+            html: html,
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonText: "Yes, continue",
+            cancelButtonText: "Cancel",
+            focusCancel: true,
+          });
         }
 
         function getCustomerById(customerId) {
@@ -1095,26 +1120,26 @@
           $("#plant").select2({
             theme: "bootstrap-5",
             width: "100%",
-            placeholder: "Cari plant",
+            placeholder: "Search plant",
           });
 
           $("#customer_id").select2({
             theme: "bootstrap-5",
             width: "100%",
-            placeholder: "Cari customer",
+            placeholder: "Search customer",
           });
 
           $("#customer_address_id").select2({
             theme: "bootstrap-5",
             width: "100%",
-            placeholder: "Cari customer address",
+            placeholder: "Search customer address",
             closeOnSelect: false,
           });
 
           $("#sku_name").select2({
             theme: "bootstrap-5",
             width: "100%",
-            placeholder: "Cari SKU",
+            placeholder: "Search SKU",
           });
         }
 
@@ -1425,31 +1450,40 @@
           jsonConfigModal.show();
         });
 
-        $("#saveJsonConfig").on("click", function () {
+        $("#saveJsonConfig").on("click", async function () {
           let parsedPlantCatalog;
           let parsedCustomerCatalog;
 
           try {
             parsedPlantCatalog = JSON.parse($("#plantJsonInput").val());
           } catch (error) {
-            alert("JSON Plant tidak valid.");
+            await showAlert("Invalid JSON", "The Plant JSON is not valid.");
             return;
           }
 
           try {
             parsedCustomerCatalog = JSON.parse($("#customerJsonInput").val());
           } catch (error) {
-            alert("JSON Customer tidak valid.");
+            await showAlert(
+              "Invalid JSON",
+              "The Customer JSON is not valid.",
+            );
             return;
           }
 
           if (!isValidPlantCatalog(parsedPlantCatalog)) {
-            alert("Struktur JSON Plant tidak sesuai.");
+            await showAlert(
+              "Invalid Structure",
+              "The Plant JSON structure is not supported.",
+            );
             return;
           }
 
           if (!isValidCustomerCatalog(parsedCustomerCatalog)) {
-            alert("Struktur JSON Customer tidak sesuai.");
+            await showAlert(
+              "Invalid Structure",
+              "The Customer JSON structure is not supported.",
+            );
             return;
           }
 
@@ -1468,6 +1502,12 @@
 
           syncCatalogDependencies();
           jsonConfigModal.hide();
+
+          await showAlert(
+            "Saved",
+            "The JSON catalogs were saved successfully.",
+            "success",
+          );
         });
 
         $("#plant").on("change", function () {
@@ -1602,51 +1642,61 @@
             -------------------------------------------------- */
 
           if (!endpoint) {
-            alert("Endpoint wajib diisi.");
+            await showAlert("Missing Endpoint", "Endpoint is required.");
 
             return;
           }
 
           if (!token) {
-            alert("Bearer Token wajib diisi.");
+            await showAlert("Missing Bearer Token", "Bearer Token is required.");
 
             return;
           }
 
           if (!number) {
-            alert("Number wajib diisi.");
+            await showAlert("Missing Number", "Number is required.");
 
             return;
           }
 
           if (!/^[a-zA-Z0-9._]+$/.test(number)) {
-            alert(
-              "Number hanya boleh berisi huruf, angka, titik dan underscore.",
+            await showAlert(
+              "Invalid Number",
+              "Number may only contain letters, numbers, dots, and underscores.",
             );
 
             return;
           }
 
           if (releaseInput === "" || !/^\d+$/.test(releaseInput)) {
-            alert("Release Number harus berupa angka.");
+            await showAlert(
+              "Invalid Release Number",
+              "Release Number must be numeric.",
+            );
 
             return;
           }
 
           if (!$("#plant").val()) {
-            alert("Plant wajib dipilih.");
+            await showAlert("Missing Plant", "Plant selection is required.");
 
             return;
           }
 
           if (!$("#customer_id").val()) {
-            alert("Customer ID wajib dipilih.");
+            await showAlert(
+              "Missing Customer ID",
+              "Customer ID selection is required.",
+            );
 
             return;
           }
 
           if (addresses.length === 0) {
-            alert("Minimal satu Customer Address ID.");
+            await showAlert(
+              "Missing Customer Address",
+              "Select at least one Customer Address ID.",
+            );
 
             return;
           }
@@ -1659,8 +1709,33 @@
                CONFIRM
             -------------------------------------------------- */
 
-          const confirmed = confirm(
-            "Akan mengirim " +
+          const confirmation = await showConfirm(
+            "Send API Requests?",
+            total +
+              " DO / API request(s) will be sent.<br><br>" +
+              addresses.length +
+              " address(es) x " +
+              copy +
+              " DO per address = " +
+              total +
+              " request(s).<br><br>" +
+              "Starting Release Number: " +
+              currentRelease +
+              "<br>" +
+              "Ending Release Number: " +
+              (currentRelease + total - 1) +
+              "<br><br>" +
+              "The Release Number will increase by 1 after each request.",
+          );
+
+          if (!confirmation.isConfirmed) {
+            return;
+          }
+
+          const confirmed = true;
+
+          if (false) showConfirm(
+            "Will send " +
               total +
               " DO / API request.\n\n" +
               addresses.length +
@@ -1669,14 +1744,14 @@
               " DO per address = " +
               total +
               " request.\n\n" +
-              "Release Number awal: " +
+              "Starting Release Number: " +
               currentRelease +
               "\n" +
-              "Release Number terakhir: " +
+              "Ending Release Number: " +
               (currentRelease + total - 1) +
               "\n\n" +
-              "Release Number akan +1 setiap request.\n\n" +
-              "Lanjutkan?",
+              "The Release Number will increase by 1 after each request.\n\n" +
+              "Continue?",
           );
 
           if (!confirmed) {
@@ -1855,7 +1930,7 @@
 
             output += "==================================================\n";
 
-            output += "DO ke          : " + result.copy + "\n";
+            output += "DO Copy        : " + result.copy + "\n";
 
             output += "Address        : " + result.address + "\n";
 
