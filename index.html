@@ -18,6 +18,16 @@
       rel="stylesheet"
     />
 
+    <link
+      href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css"
+      rel="stylesheet"
+    />
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css"
+      rel="stylesheet"
+    />
+
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
     <style>
@@ -103,6 +113,41 @@
         font-size: 12px;
         min-height: 32px;
         padding: 4px 8px;
+      }
+
+      .select2-container .select2-selection--single {
+        min-height: 32px;
+        font-size: 12px;
+      }
+
+      .select2-container--bootstrap-5
+        .select2-selection--single
+        .select2-selection__rendered {
+        line-height: 22px;
+      }
+
+      .select2-container .select2-selection--multiple {
+        min-height: 32px;
+        font-size: 12px;
+      }
+
+      .json-editor {
+        height: 60vh;
+        min-height: 420px;
+        font-family: Consolas, Monaco, monospace;
+        font-size: 11px;
+      }
+
+      .json-config-modal .modal-dialog {
+        max-width: min(1200px, 96vw);
+      }
+
+      .json-config-modal .modal-body {
+        min-height: 70vh;
+      }
+
+      .json-config-modal .form-control.json-editor {
+        height: 60vh;
       }
 
       textarea.form-control {
@@ -271,7 +316,17 @@
 
             <div class="card section-card">
               <div class="card-body">
-                <div class="section-title">API Configuration</div>
+                <div class="d-flex justify-content-between align-items-center">
+                  <div class="section-title mb-0">API Configuration</div>
+
+                  <button
+                    type="button"
+                    class="btn btn-outline-secondary btn-sm"
+                    id="openJsonConfig"
+                  >
+                    JSON Master
+                  </button>
+                </div>
 
                 <div class="row g-2">
                   <div class="col-8">
@@ -370,13 +425,7 @@
                   <div class="col-6">
                     <label class="form-label required"> Plant </label>
 
-                    <select class="form-select" id="plant">
-                      <option value="SGI040P1">SGI040P1</option>
-
-                      <option value="SIG007ST">SIG007ST</option>
-
-                      <option value="SGI060ST" selected>SGI060ST</option>
-                    </select>
+                    <select class="form-select" id="plant"></select>
                   </div>
 
                   <div class="col-6">
@@ -434,15 +483,10 @@
                   <div class="col-6">
                     <label class="form-label required"> Customer ID </label>
 
-                    <input
-                      type="text"
-                      class="form-control"
-                      id="customer_id"
-                      placeholder="FD001"
-                    />
+                    <select class="form-select" id="customer_id"></select>
                   </div>
 
-                  <div class="col-6">
+                  <div class="col-6 d-none">
                     <div class="d-flex justify-content-between">
                       <label class="form-label required">
                         Jumlah DO per Address
@@ -478,14 +522,15 @@
                       </span>
                     </div>
 
-                    <textarea
-                      class="form-control"
+                    <select
+                      class="form-select"
                       id="customer_address_id"
-                      rows="3"
-                      placeholder="ZXC-Address-1&#10;ZXC-Address-2&#10;ZXC-Address-3&#10;ZXC-Address-4"
-                    ></textarea>
+                      multiple
+                    ></select>
 
-                    <div class="form-text">One address per line</div>
+                    <div class="form-text">
+                      Multi select sesuai customer yang dipilih
+                    </div>
                   </div>
                 </div>
               </div>
@@ -528,7 +573,7 @@
                         type="text"
                         class="form-control auto-field"
                         id="uom"
-                        readonly
+                        disabled
                       />
                     </div>
 
@@ -539,7 +584,7 @@
                         type="text"
                         class="form-control auto-field"
                         id="load_type"
-                        readonly
+                        disabled
                       />
                     </div>
 
@@ -661,10 +706,167 @@
       </div>
     </div>
 
+    <div
+      class="modal fade json-config-modal"
+      id="jsonConfigModal"
+      tabindex="-1"
+      aria-labelledby="jsonConfigLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="jsonConfigLabel">
+              Paste JSON Plant dan Customer
+            </h5>
+
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+
+          <div class="modal-body">
+            <div class="row g-3">
+              <div class="col-lg-6">
+                <label class="form-label required">JSON Plant</label>
+
+                <textarea
+                  class="form-control json-editor"
+                  id="plantJsonInput"
+                  spellcheck="false"
+                ></textarea>
+              </div>
+
+              <div class="col-lg-6">
+                <label class="form-label required">JSON Customer</label>
+
+                <textarea
+                  class="form-control json-editor"
+                  id="customerJsonInput"
+                  spellcheck="false"
+                ></textarea>
+              </div>
+            </div>
+
+            <div class="form-text mt-2">
+              Submit akan menyimpan JSON ke localStorage dan langsung dipakai
+              untuk dropdown Plant, Customer, dan Address.
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              data-bs-dismiss="modal"
+            >
+              Cancel
+            </button>
+
+            <button type="button" class="btn btn-primary" id="saveJsonConfig">
+              Save
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
     <script>
       $(document).ready(function () {
+        const STORAGE_KEYS = {
+          plantCatalog: "create-do-plant-catalog",
+          customerCatalog: "create-do-customer-catalog",
+        };
+
+        const defaultPlantCatalog = {
+          plant: [
+            {
+              id: "SGI040P1",
+              name: "SGI040P1",
+              sku: [
+                {
+                  id: "CYOXGFMP0010070",
+                  name: "CYOXGFMP0010070",
+                  type: "CYLINDER",
+                  uom: "PC",
+                },
+              ],
+            },
+            {
+              id: "SIG007ST",
+              name: "SIG007ST",
+              sku: [
+                {
+                  id: "BULAR0010000000",
+                  name: "BULAR0010000000",
+                  type: "TUBE",
+                  uom: "M3",
+                },
+              ],
+            },
+            {
+              id: "SGI060ST",
+              name: "SGI060ST",
+              sku: [
+                {
+                  id: "BUHID0010000000",
+                  name: "BUHID0010000000",
+                  type: "BULK",
+                  uom: "M3",
+                },
+                {
+                  id: "BUCAR0020000000",
+                  name: "BUCAR0020000000",
+                  type: "BULK",
+                  uom: "M3",
+                },
+                {
+                  id: "BULOX0010000000",
+                  name: "BULOX0010000000",
+                  type: "BULK",
+                  uom: "M3",
+                },
+                {
+                  id: "BULIN0010000000",
+                  name: "BULIN0010000000",
+                  type: "BULK",
+                  uom: "M3",
+                },
+              ],
+            },
+          ],
+        };
+
+        const defaultCustomerCatalog = {
+          customer: [
+            {
+              id: "AXC-CUST-1",
+              name: "AXC-CUST-1",
+              address: [
+                {
+                  id: "AXC-ADD-1",
+                  name: "AXC-ADD-1",
+                },
+              ],
+            },
+          ],
+        };
+
+        let plantCatalog = JSON.parse(JSON.stringify(defaultPlantCatalog));
+        let customerCatalog = JSON.parse(JSON.stringify(defaultCustomerCatalog));
+        let selectedAddressIds = [];
+
+        const jsonConfigModal = bootstrap.Modal.getOrCreateInstance(
+          document.getElementById("jsonConfigModal"),
+        );
+
         /* ==========================================================
    SHOW / HIDE BEARER TOKEN
 ========================================================== */
@@ -684,40 +886,221 @@
           }
         });
 
-        /* ==========================================================
-       PLANT CONFIGURATION
-    ========================================================== */
+        function getPlantById(plantId) {
+          return plantCatalog.plant.find(function (item) {
+            return item.id === plantId;
+          });
+        }
 
-        const plantConfig = {
-          SGI040P1: {
-            type: "CYLINDER",
+        function getCustomerById(customerId) {
+          return customerCatalog.customer.find(function (item) {
+            return item.id === customerId;
+          });
+        }
 
-            uom: "PC",
+        function setSelectedAddresses(addresses) {
+          selectedAddressIds = Array.isArray(addresses)
+            ? addresses.filter(function (item) {
+                return item && typeof item === "string";
+              })
+            : [];
 
-            skus: ["CYOXGFMP0010070"],
-          },
+          $("#customer_address_id").val(selectedAddressIds).trigger("change");
+        }
 
-          SIG007ST: {
-            type: "TUBE",
+        function isValidPlantCatalog(data) {
+          return (
+            data &&
+            Array.isArray(data.plant) &&
+            data.plant.every(function (item) {
+              return (
+                item &&
+                typeof item.id === "string" &&
+                typeof item.name === "string" &&
+                Array.isArray(item.sku) &&
+                item.sku.every(function (sku) {
+                  return (
+                    sku &&
+                    typeof sku.id === "string" &&
+                    typeof sku.name === "string" &&
+                    typeof sku.type === "string" &&
+                    typeof sku.uom === "string"
+                  );
+                })
+              );
+            })
+          );
+        }
 
-            uom: "M3",
+        function isValidCustomerCatalog(data) {
+          return (
+            data &&
+            Array.isArray(data.customer) &&
+            data.customer.every(function (item) {
+              return (
+                item &&
+                typeof item.id === "string" &&
+                typeof item.name === "string" &&
+                Array.isArray(item.address)
+              );
+            })
+          );
+        }
 
-            skus: ["BULAR0010000000"],
-          },
+        function loadCatalogsFromStorage() {
+          const storedPlantCatalog = localStorage.getItem(STORAGE_KEYS.plantCatalog);
+          const storedCustomerCatalog = localStorage.getItem(
+            STORAGE_KEYS.customerCatalog,
+          );
 
-          SGI060ST: {
-            type: "BULK",
+          if (storedPlantCatalog) {
+            try {
+              const parsedPlantCatalog = JSON.parse(storedPlantCatalog);
 
-            uom: "M3",
+              if (isValidPlantCatalog(parsedPlantCatalog)) {
+                plantCatalog = parsedPlantCatalog;
+              }
+            } catch (error) {
+              localStorage.removeItem(STORAGE_KEYS.plantCatalog);
+            }
+          }
 
-            skus: [
-              "BUHID0010000000",
-              "BUCAR0020000000",
-              "BULOX0010000000",
-              "BULIN0010000000",
-            ],
-          },
-        };
+          if (storedCustomerCatalog) {
+            try {
+              const parsedCustomerCatalog = JSON.parse(storedCustomerCatalog);
+
+              if (isValidCustomerCatalog(parsedCustomerCatalog)) {
+                customerCatalog = parsedCustomerCatalog;
+              }
+            } catch (error) {
+              localStorage.removeItem(STORAGE_KEYS.customerCatalog);
+            }
+          }
+        }
+
+        function populateJsonEditors() {
+          $("#plantJsonInput").val(JSON.stringify(plantCatalog, null, 4));
+          $("#customerJsonInput").val(JSON.stringify(customerCatalog, null, 4));
+        }
+
+        function syncCatalogDependencies() {
+          const currentPlant = $("#plant").val();
+          const currentCustomer = $("#customer_id").val();
+          const fallbackPlant =
+            plantCatalog.plant.length > 0 ? plantCatalog.plant[0].id : "";
+          const fallbackCustomer =
+            customerCatalog.customer.length > 0
+              ? customerCatalog.customer[0].id
+              : "";
+
+          renderPlantOptions();
+          renderCustomerOptions();
+
+          if (!getPlantById(currentPlant)) {
+            $("#plant").val(fallbackPlant);
+          }
+
+          if (!getCustomerById(currentCustomer)) {
+            $("#customer_id").val(fallbackCustomer);
+            setSelectedAddresses([]);
+          }
+
+          updatePlantFields();
+          updateCustomerFields();
+        }
+
+        function getDefaultCustomerId() {
+          return customerCatalog.customer.length > 0
+            ? customerCatalog.customer[0].id
+            : "";
+        }
+
+        function renderPlantOptions() {
+          const select = $("#plant");
+
+          select.empty();
+
+          $.each(plantCatalog.plant, function (index, item) {
+            select.append(
+              $("<option>", {
+                value: item.id,
+                text: item.name,
+              }),
+            );
+          });
+        }
+
+        function renderCustomerOptions() {
+          const select = $("#customer_id");
+
+          select.empty();
+
+          $.each(customerCatalog.customer, function (index, item) {
+            select.append(
+              $("<option>", {
+                value: item.id,
+                text: item.name,
+              }),
+            );
+          });
+        }
+
+        function populateAddressOptions(customerId) {
+          const customer = getCustomerById(customerId);
+          const select = $("#customer_address_id");
+          const validIds = customer
+            ? customer.address.map(function (item) {
+                return item.id;
+              })
+            : [];
+
+          selectedAddressIds = selectedAddressIds.filter(function (item) {
+            return validIds.includes(item);
+          });
+
+          select.empty();
+
+          if (customer) {
+            $.each(customer.address, function (index, item) {
+              select.append(
+                $("<option>", {
+                  value: item.id,
+                  text: item.name,
+                }),
+              );
+            });
+          }
+
+          select.prop("disabled", !customer);
+          setSelectedAddresses(selectedAddressIds);
+        }
+
+        function initSelect2() {
+          $("#plant").select2({
+            theme: "bootstrap-5",
+            width: "100%",
+            placeholder: "Cari plant",
+          });
+
+          $("#customer_id").select2({
+            theme: "bootstrap-5",
+            width: "100%",
+            placeholder: "Cari customer",
+          });
+
+          $("#customer_address_id").select2({
+            theme: "bootstrap-5",
+            width: "100%",
+            placeholder: "Cari customer address",
+            closeOnSelect: false,
+          });
+
+          $("#sku_name").select2({
+            theme: "bootstrap-5",
+            width: "100%",
+            placeholder: "Cari SKU",
+          });
+        }
 
         /* ==========================================================
        DEFAULT PICKUP
@@ -747,15 +1130,7 @@
     ========================================================== */
 
         function getAddresses() {
-          return $("#customer_address_id")
-            .val()
-            .split(/\r?\n/)
-            .map(function (item) {
-              return item.trim();
-            })
-            .filter(function (item) {
-              return item !== "";
-            });
+          return selectedAddressIds.slice();
         }
 
         /* ==========================================================
@@ -800,33 +1175,80 @@
     ========================================================== */
 
         function updatePlantFields() {
-          const plant = $("#plant").val();
+          const selectedPlant = getPlantById($("#plant").val());
 
-          const config = plantConfig[plant];
-
-          if (!config) {
+          if (!selectedPlant) {
+            $("#load_type").val("");
+            $("#uom").val("");
+            $("#sku_name").empty();
             return;
           }
 
-          $("#load_type").val(config.type);
-
-          $("#uom").val(config.uom);
-
           const sku = $("#sku_name");
+          const currentSku = sku.val();
 
           sku.empty();
 
-          $.each(config.skus, function (index, value) {
+          $.each(selectedPlant.sku, function (index, item) {
             sku.append(
               $("<option>", {
-                value: value,
+                value: item.id,
 
-                text: value,
+                text: item.name,
               }),
             );
           });
 
+          if (currentSku) {
+            sku.val(currentSku);
+          }
+
+          if (!sku.val() && selectedPlant.sku.length > 0) {
+            sku.val(selectedPlant.sku[0].id);
+          }
+
+          updateSkuMeta();
           updatePreview();
+        }
+
+        function updateSkuMeta() {
+          const selectedPlant = getPlantById($("#plant").val());
+          const selectedSkuId = $("#sku_name").val();
+          const selectedSku = selectedPlant
+            ? selectedPlant.sku.find(function (item) {
+                return item.id === selectedSkuId;
+              })
+            : null;
+
+          $("#load_type").val(selectedSku ? selectedSku.type : "");
+          $("#uom").val(selectedSku ? selectedSku.uom : "");
+        }
+
+        function updateCustomerFields() {
+          populateAddressOptions($("#customer_id").val());
+          updatePreview();
+        }
+
+        function collectPayloads() {
+          const addresses = getAddresses();
+          const copy = getCopyCount();
+          let release = parseInt($("#release_number").val(), 10);
+
+          if (isNaN(release)) {
+            release = 1;
+          }
+
+          const payloads = [];
+          let counter = 0;
+
+          for (let c = 1; c <= copy; c++) {
+            $.each(addresses, function (index, address) {
+              payloads.push(buildPayload(address, release + counter));
+              counter++;
+            });
+          }
+
+          return payloads;
         }
 
         /* ==========================================================
@@ -897,28 +1319,7 @@
 
         function updatePreview() {
           updateTotals();
-
-          const addresses = getAddresses();
-
-          const copy = getCopyCount();
-
-          let release = parseInt($("#release_number").val(), 10);
-
-          if (isNaN(release)) {
-            release = 1;
-          }
-
-          const payloads = [];
-
-          let counter = 0;
-
-          for (let c = 1; c <= copy; c++) {
-            $.each(addresses, function (index, address) {
-              payloads.push(buildPayload(address, release + counter));
-
-              counter++;
-            });
-          }
+          const payloads = collectPayloads();
 
           $("#requestBody").val(JSON.stringify(payloads, null, 4));
         }
@@ -970,14 +1371,6 @@
        ADDRESS
     ========================================================== */
 
-        $("#customer_address_id").on("input", function () {
-          updatePreview();
-        });
-
-        /* ==========================================================
-       COPY
-    ========================================================== */
-
         $("#copy_count").on("input", function () {
           let value = parseInt($(this).val(), 10);
 
@@ -994,14 +1387,6 @@
        PLANT CHANGE
     ========================================================== */
 
-        $("#plant").on("change", function () {
-          updatePlantFields();
-        });
-
-        /* ==========================================================
-       GENERAL INPUT
-    ========================================================== */
-
         $(
           "#endpoint, " +
             "#token, " +
@@ -1010,11 +1395,79 @@
             "#expected_pickup_on, " +
             "#note, " +
             "#line_number, " +
-            "#customer_id, " +
             "#sku_name, " +
             "#quantity, " +
             "#load_note",
         ).on("input change", function () {
+          updatePreview();
+        });
+
+        $("#openJsonConfig").on("click", function () {
+          populateJsonEditors();
+          jsonConfigModal.show();
+        });
+
+        $("#saveJsonConfig").on("click", function () {
+          let parsedPlantCatalog;
+          let parsedCustomerCatalog;
+
+          try {
+            parsedPlantCatalog = JSON.parse($("#plantJsonInput").val());
+          } catch (error) {
+            alert("JSON Plant tidak valid.");
+            return;
+          }
+
+          try {
+            parsedCustomerCatalog = JSON.parse($("#customerJsonInput").val());
+          } catch (error) {
+            alert("JSON Customer tidak valid.");
+            return;
+          }
+
+          if (!isValidPlantCatalog(parsedPlantCatalog)) {
+            alert("Struktur JSON Plant tidak sesuai.");
+            return;
+          }
+
+          if (!isValidCustomerCatalog(parsedCustomerCatalog)) {
+            alert("Struktur JSON Customer tidak sesuai.");
+            return;
+          }
+
+          plantCatalog = parsedPlantCatalog;
+          customerCatalog = parsedCustomerCatalog;
+
+          localStorage.setItem(
+            STORAGE_KEYS.plantCatalog,
+            JSON.stringify(plantCatalog),
+          );
+
+          localStorage.setItem(
+            STORAGE_KEYS.customerCatalog,
+            JSON.stringify(customerCatalog),
+          );
+
+          syncCatalogDependencies();
+          jsonConfigModal.hide();
+        });
+
+        $("#plant").on("change", function () {
+          updatePlantFields();
+        });
+
+        $("#customer_id").on("change", function () {
+          setSelectedAddresses([]);
+          updateCustomerFields();
+        });
+
+        $("#customer_address_id").on("change", function () {
+          selectedAddressIds = $(this).val() || [];
+          updatePreview();
+        });
+
+        $("#sku_name").on("change", function () {
+          updateSkuMeta();
           updatePreview();
         });
 
@@ -1162,6 +1615,18 @@
             return;
           }
 
+          if (!$("#plant").val()) {
+            alert("Plant wajib dipilih.");
+
+            return;
+          }
+
+          if (!$("#customer_id").val()) {
+            alert("Customer ID wajib dipilih.");
+
+            return;
+          }
+
           if (addresses.length === 0) {
             alert("Minimal satu Customer Address ID.");
 
@@ -1202,7 +1667,7 @@
 
           /* --------------------------------------------------
                DISABLE
-            -------------------------------------------------- */
+             -------------------------------------------------- */
 
           $("#sendBtn").prop("disabled", true);
 
@@ -1414,11 +1879,12 @@
 
           $("#release_number").val("1");
 
-          $("#customer_id").val("FD001");
+          $("#customer_id").val(getDefaultCustomerId());
 
           $("#copy_count").val("1");
 
-          $("#customer_address_id").val("ZXC-Address-4");
+          setSelectedAddresses([]);
+          populateAddressOptions($("#customer_id").val());
 
           $("#quantity").val("10000");
 
@@ -1445,9 +1911,31 @@
        INITIALIZE
     ========================================================== */
 
+        loadCatalogsFromStorage();
+        renderPlantOptions();
+        renderCustomerOptions();
+        initSelect2();
         setDefaultExpectedPickup();
 
+        $("#endpoint").val("");
+        $("#token").val("");
+        $("#delivery_type").val("SALES ORDER");
+        $("#origin_source").val("-");
+        $("#plant").val("SGI060ST");
+        $("#reference_number").val("1001");
+        $("#line_number").val("1");
+        $("#release_number").val("1");
+        $("#customer_id").val(getDefaultCustomerId());
+        $("#copy_count").val("1");
+        $("#quantity").val("10000");
+        $("#load_note").val("");
+        $("#note").val("");
         updatePlantFields();
+        populateAddressOptions($("#customer_id").val());
+
+        if (!$("#expected_pickup_on").val()) {
+          setDefaultExpectedPickup();
+        }
 
         updatePreview();
       });
