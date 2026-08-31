@@ -435,12 +435,12 @@
                       type="text"
                       class="form-control"
                       id="reference_number"
-                      value="1001"
+                      value=""
                       autocomplete="off"
                     />
 
                     <div class="form-text">
-                      Alphanumeric, dot and underscore only
+                      Default: Today with format DDMMYYYY
                     </div>
                   </div>
 
@@ -464,11 +464,11 @@
                       id="release_number"
                       min="0"
                       step="1"
-                      value="1"
+                      value=""
                     />
 
                     <div class="release-current">
-                      Increases by 1 for each request
+                      Increases by 1 after each Send All
                     </div>
                   </div>
                 </div>
@@ -1272,6 +1272,91 @@
           updatePreview();
         }
 
+        const RELEASE_STORAGE_KEY = "do_release_number_state";
+
+        function padDatePart(value) {
+          return String(value).padStart(2, "0");
+        }
+
+        function getTodayKey() {
+          const now = new Date();
+
+          return [
+            now.getFullYear(),
+            padDatePart(now.getMonth() + 1),
+            padDatePart(now.getDate()),
+          ].join("-");
+        }
+
+        function getTodayReferenceNumber() {
+          const now = new Date();
+
+          return (
+            padDatePart(now.getDate()) +
+            padDatePart(now.getMonth() + 1) +
+            now.getFullYear()
+          );
+        }
+
+        function saveReleaseState(state) {
+          localStorage.setItem(RELEASE_STORAGE_KEY, JSON.stringify(state));
+        }
+
+        function getReleaseState() {
+          const today = getTodayKey();
+          let parsed = null;
+
+          try {
+            parsed = JSON.parse(localStorage.getItem(RELEASE_STORAGE_KEY));
+          } catch (error) {
+            parsed = null;
+          }
+
+          const releaseNumber = parseInt(parsed && parsed.nextReleaseNumber, 10);
+
+          if (
+            !parsed ||
+            parsed.date !== today ||
+            isNaN(releaseNumber) ||
+            releaseNumber < 1
+          ) {
+            const resetState = {
+              date: today,
+              nextReleaseNumber: 1,
+            };
+
+            saveReleaseState(resetState);
+
+            return resetState;
+          }
+
+          return {
+            date: today,
+            nextReleaseNumber: releaseNumber,
+          };
+        }
+
+        function setNextReleaseNumber(value) {
+          const nextReleaseNumber = parseInt(value, 10);
+          const safeReleaseNumber =
+            isNaN(nextReleaseNumber) || nextReleaseNumber < 1
+              ? 1
+              : nextReleaseNumber;
+          const state = {
+            date: getTodayKey(),
+            nextReleaseNumber: safeReleaseNumber,
+          };
+
+          saveReleaseState(state);
+
+          return safeReleaseNumber;
+        }
+
+        function syncDeliveryReferenceFields() {
+          $("#reference_number").val(getTodayReferenceNumber());
+          $("#release_number").val(getReleaseState().nextReleaseNumber);
+        }
+
         function collectPayloads() {
           const addresses = getAddresses();
           const copy = getCopyCount();
@@ -1406,6 +1491,12 @@
           value = value.replace(/\D/g, "");
 
           $(this).val(value);
+
+          if (value === "") {
+            setNextReleaseNumber(1);
+          } else {
+            setNextReleaseNumber(value);
+          }
 
           updatePreview();
         });
@@ -1613,16 +1704,17 @@
 
         /* ==========================================================
        SEND ALL
-       
+        
        RELEASE NUMBER:
-       
-       Request 1 = current release
-       Request 2 = current release + 1
-       Request 3 = current release + 2
-       dst...
-       
-       Increment dilakukan setelah setiap request selesai.
-    ========================================================== */
+        
+        Request 1 = current release
+        Request 2 = current release + 1
+        Request 3 = current release + 2
+        dst...
+        
+        Setelah proses selesai,
+        simpan next release number.
+     ========================================================== */
 
         $("#sendBtn").on("click", async function () {
           const endpoint = $("#endpoint").val().trim();
@@ -1705,6 +1797,8 @@
 
           let currentRelease = parseInt(releaseInput, 10);
 
+          currentRelease = setNextReleaseNumber(currentRelease);
+
           /* --------------------------------------------------
                CONFIRM
             -------------------------------------------------- */
@@ -1747,10 +1841,10 @@
               "Starting Release Number: " +
               currentRelease +
               "\n" +
-              "Ending Release Number: " +
-              (currentRelease + total - 1) +
+              "Release Number Used: " +
+              currentRelease +
               "\n\n" +
-              "The Release Number will increase by 1 after each request.\n\n" +
+              "The Release Number will increase by 1 after Send All completes.\n\n" +
               "Continue?",
           );
 
@@ -1834,8 +1928,6 @@
               results.push(result);
 
               /*
-               * IMPORTANT
-               *
                * Setelah request selesai,
                * Release Number langsung +1.
                */
@@ -1843,10 +1935,6 @@
               currentRelease++;
 
               $("#release_number").val(currentRelease);
-
-              /*
-               * Progress
-               */
 
               const progress = Math.round((requestIndex / total) * 100);
 
@@ -1893,9 +1981,11 @@
           }
 
           /*
-           * Pastikan Release Number
-           * menggunakan nilai terakhir.
+           * Setelah seluruh proses selesai,
+           * simpan release number berikutnya.
            */
+
+          currentRelease = setNextReleaseNumber(currentRelease);
 
           $("#release_number").val(currentRelease);
 
@@ -1966,11 +2056,9 @@
 
           setSelectValue("#plant", getDefaultPlantId());
 
-          $("#reference_number").val("1001");
-
           $("#line_number").val("1");
 
-          $("#release_number").val("1");
+          syncDeliveryReferenceFields();
 
           setSelectValue("#customer_id", getDefaultCustomerId());
 
@@ -2015,9 +2103,8 @@
         $("#delivery_type").val("SALES ORDER");
         $("#origin_source").val("-");
         setSelectValue("#plant", getDefaultPlantId());
-        $("#reference_number").val("1001");
         $("#line_number").val("1");
-        $("#release_number").val("1");
+        syncDeliveryReferenceFields();
         setSelectValue("#customer_id", getDefaultCustomerId());
         $("#copy_count").val("1");
         $("#quantity").val("10000");
